@@ -6,7 +6,6 @@
 package opendiabetesvaultgui.launcher;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
@@ -23,11 +22,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import static opendiabetesvaultgui.launcher.FatherController.ICON;
@@ -42,47 +38,90 @@ import static opendiabetesvaultgui.launcher.FatherController.PREFS_FOR_ALL;
  */
 public class OptionsWindowController extends FatherController implements Initializable {
 
+    /**
+     * Displays all choosable languages.
+     */
     @FXML
     private ComboBox selectLanguage;
-    @FXML
-    private AnchorPane fatherPane;
+
+    /**
+     * Applies all changes when pressed.
+     */
     @FXML
     private Button applyButton;
+    /**
+     * Cancels all changes and closes window when pressed.
+     */
+
     @FXML
     private Button cancelButton;
 
+    /**
+     * Displays the chosen database path.
+     */
     @FXML
     private TextField dataBasePath;
-
+    /**
+     * The current language by the time the OptionsWindow.fxml was opened.
+     */
     private String currentLanguage;
+    /**
+     * The current date format by the time the OptionsWindow.fxml was opened.
+     */
+
     private String currentDateFormat;
-    private String path;
+
+    /**
+     * The current path of database by the time the OptionsWindow.fxml was
+     * opened.
+     */
+    private String currentPath;
+
+    /**
+     * The new chosen path of the database.
+     */
+    private String pathTmp;
+    /**
+     * The passed ResourceBundle.
+     */
+
     private ResourceBundle myResource;
 
+    /**
+     * Displays the type of the database.
+     */
     @FXML
-    private TabPane tabs;
 
-    @FXML
-    private Tab database;
-    @FXML
-    private Tab languages;
-    @FXML
     private CheckBox isInMemoryCheckBox;
+    /**
+     * Displays the choosable date formats.
+     */
     @FXML
+
     private ComboBox selectDateFormat;
 
+    /**
+     * Saves if the language was changed.
+     */
     private Boolean newLanguage = false;
+    /**
+     * Saves if the path of the database was changed.
+     */
     private Boolean newPath = false;
+    /**
+     * Saves if the type of the database was changed.
+     */
     private Boolean newType = false;
+    /**
+     * Saves if the date format was changed.
+     */
     private Boolean newDateFormat = false;
-
-    private String currentPath;
 
     /**
      * Initializes the controller class.
      *
      * @param location the url of OptionsWindow.fxml
-     * @param resources the used resource bundle
+     * @param resources the used ResourceBundle for localization
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -98,12 +137,12 @@ public class OptionsWindowController extends FatherController implements Initial
 
             selectLanguage.getItems().add(e);
         });
-        
+
         DATE_FORMATS.keySet().forEach((String e) -> {
             selectDateFormat.getItems().add(e);
         });
 
-        // if the saved language isnt supported       
+        // if the saved language isnt supported    
         // only relevant after adding a new language
         currentLanguage = PREFS_FOR_ALL.get(LANGUAGE_NAME, "English");
         currentDateFormat = PREFS_FOR_ALL.get("dateFormat", "yyyy-MM-dd");
@@ -111,28 +150,13 @@ public class OptionsWindowController extends FatherController implements Initial
         selectLanguage.setValue(currentLanguage);
         selectDateFormat.setValue(currentDateFormat);
         languageListener();
-        checkBoxListener();
+        typeListener();
         dateFormatListener();
 
     }
 
-    private void checkBoxListener() {
-        isInMemoryCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> observable,
-                Boolean oldValue, Boolean newValue) -> {
-
-            newType = !newType;
-            if(!newLanguage && !newPath && !newDateFormat)
-                {
-                   applyButton.setDisable(!newType);
-                }
-
-        });
-    }
-
     /**
-     * This method lets the user choose a new directory for the database. After
-     * the user chose a directory, the path will be saved in the java
-     * preferences.
+     * Closes the OptionWindow.fxml.
      *
      * @param action when triggered call method
      */
@@ -142,9 +166,8 @@ public class OptionsWindowController extends FatherController implements Initial
     }
 
     /**
-     * This method lets the user choose a new directory for the database. After
-     * the user chose a directory, the path will be saved in the java
-     * preferences.
+     * Lets the user choose a new directory for the database. After the user
+     * chose a directory, the path will be saved in the java preferences.
      *
      * @param action when triggered call method
      */
@@ -157,10 +180,10 @@ public class OptionsWindowController extends FatherController implements Initial
 
         if (selectedDirectory != null) {
 
-            path = selectedDirectory.getAbsolutePath();
-            dataBasePath.setText(path);
+            pathTmp = selectedDirectory.getAbsolutePath();
+            dataBasePath.setText(pathTmp);
 
-            if (!path.equals(currentPath)) {
+            if (!pathTmp.equals(currentPath)) {
                 applyButton.setDisable(false);
                 newPath = true;
             } else {
@@ -171,19 +194,18 @@ public class OptionsWindowController extends FatherController implements Initial
     }
 
     /**
-     * This method changes the used language and is assigned to the applyButton.
-     * At first a alert window will open, which asks for the users confirmation.
-     * If the users confirms,the java preferences values assigned to
-     * LANGUAGE_DISPLAY and LANGUAGE_NAME will be updated and the option window
-     * closes.
+     * Changes the used language and is assigned to the applyButton. At first a
+     * alert window will open, which asks for the users confirmation. If the
+     * users confirms,the java preferences values assigned to LANGUAGE_DISPLAY
+     * and LANGUAGE_NAME will be updated and the option window closes.
      *
      * @param event when triggered calls method
-     * @throws java.net.MalformedURLException
-     * @throws java.io.IOException
+     * @throws java.net.MalformedURLException if the url of the image of the
+     * alert couldnt be parsed
      *
      */
     @FXML
-    private void applyChanges(ActionEvent event) throws MalformedURLException, IOException {
+    private void applyChanges(ActionEvent event) throws MalformedURLException {
 
         // create and show alert window
         ButtonType declineButton = new ButtonType(myResource.getString("option.alertCancelButton"), ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -203,7 +225,8 @@ public class OptionsWindowController extends FatherController implements Initial
                 getClass().getResource("/opendiabetesvaultgui/stylesheets/alertStyle.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.initOwner((Stage) (((Node) event.getSource())).getScene().getWindow());
-        stage.getIcons().add(new Image(createURL(ICON).toString()));
+        stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
+
         Optional<ButtonType> result = alert.showAndWait();
 
         // if user confirms
@@ -215,20 +238,20 @@ public class OptionsWindowController extends FatherController implements Initial
             PREFS_FOR_ALL.putBoolean("databaseInMemory", isInMemoryCheckBox.isSelected());
 
             PREFS_FOR_ALL.put("pathDatabase", (String) dataBasePath.getText());
-            
+
             PREFS_FOR_ALL.put("dateFormat", (String) selectDateFormat.getValue());
             // close window
-            if (newPath  || newType) {
-                                getPrimaryStage().close();
+            if (newPath || newType) {
+                getPrimaryStage().close();
 
             } else {
-                fatherPane.getScene().getWindow().hide();
+                applyButton.getScene().getWindow().hide();
             }
         }
     }
 
     /**
-     * This method enables the applyButton when the language was changed.
+     * Enables the applyButton when the language was changed.
      */
     private void languageListener() {
         selectLanguage.valueProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
@@ -244,9 +267,28 @@ public class OptionsWindowController extends FatherController implements Initial
         });
 
     }
-    
+
+    /**
+     * Enables the applyButton when the type of the database was changed.
+     */
+    private void typeListener() {
+        isInMemoryCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> observable,
+                Boolean oldValue, Boolean newValue) -> {
+
+            newType = !newType;
+            if (!newLanguage && !newPath && !newDateFormat) {
+                applyButton.setDisable(!newType);
+            }
+
+        });
+    }
+
+    /**
+     * Enables the applyButton when the date format was changed.
+     */
     private void dateFormatListener() {
-        selectDateFormat.valueProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
+        selectDateFormat.valueProperty().addListener((ObservableValue observableValue,
+                Object oldValue, Object newValue) -> {
 
             if (currentDateFormat.equals(newValue)) {
                 applyButton.setDisable(!newPath && !newType && !newLanguage);

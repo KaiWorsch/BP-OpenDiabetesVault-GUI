@@ -7,10 +7,7 @@ package opendiabetesvaultgui.launcher;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -40,8 +37,7 @@ public class Launch extends Application {
             userNodeForPackage(InputPasswordController.class);
 
     @Override
-    public final void start(final Stage stage) throws MalformedURLException,
-            BackingStoreException, IOException, URISyntaxException {
+    public final void start(final Stage stage) throws IOException, BackingStoreException {
 
         stage.setTitle("OpenDiabetesVault - Please Log in");
         stage.setResizable(false);
@@ -60,34 +56,29 @@ public class Launch extends Application {
         }
         Parent root;
         // if a password was set
-                    Class fc = FatherController.getFatherControllerClass();
 
         if ((Arrays.toString(prefs.keys())).contains("properties")) {
-            String path = LOGIN_PAGE;
-            URL url = fc.getResource(path).toURI().toURL();
+            URL url = getClass().getResource(LOGIN_PAGE);
             FXMLLoader loader = new FXMLLoader(url,
                     ResourceBundle.getBundle(FatherController.RESOURCE_PATH,
                             new Locale(FatherController.PREFS_FOR_ALL.
-                                    get(FatherController.
-                                            LANGUAGE_DISPLAY, ""))));
+                                    get(FatherController.LANGUAGE_DISPLAY, ""))));
             root = loader.load();
             // the application was started the first time
         } else {
-            URL url = fc.getResource(FatherController.PASSWORD_INPUT_PAGE).toURI().toURL();
+            URL url = getClass().getResource(FatherController.PASSWORD_INPUT_PAGE);
             FXMLLoader loader = new FXMLLoader(url,
-                    ResourceBundle.getBundle(FatherController.
-                            RESOURCE_PATH, new Locale(
-                            FatherController.PREFS_FOR_ALL.get(FatherController.
-                                    LANGUAGE_DISPLAY, java.util.Locale.
-                                            getDefault().toString()))));
+                    ResourceBundle.getBundle(FatherController.RESOURCE_PATH, new Locale(
+                            FatherController.PREFS_FOR_ALL.get(FatherController.LANGUAGE_DISPLAY, java.util.Locale.
+                                    getDefault().toString()))));
             root = loader.load();
 
         }
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.getIcons().add(new Image(
-                Paths.get(FatherController.ICON).toUri().toURL().toString()));
+        stage.getIcons().add(new Image(getClass().getResource(FatherController.ICON).toExternalForm()));
+
         stage.show();
 
     }

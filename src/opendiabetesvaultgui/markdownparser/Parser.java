@@ -61,7 +61,7 @@ public class Parser {
      * @return the filecontent as a String
      * @throws FileNotFoundException Exception if the file cannot be found
      */
-    private static String readFile(final String filePath)
+    private static String readFile(String filePath)
             throws FileNotFoundException {
         try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
             String returnValue = stream.

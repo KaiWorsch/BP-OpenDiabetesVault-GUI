@@ -39,8 +39,8 @@ public class PluginHelpController implements Initializable {
     /**
      * Initializes the controller class.
      *
-     * @param url
-     * @param rb
+     * @param url the url of PluginHelp.fxml
+     * @param rb the passed ResourceBundle
      */
     @Override
     public void initialize(final URL url, final ResourceBundle rb) {

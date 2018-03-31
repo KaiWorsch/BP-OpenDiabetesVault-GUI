@@ -15,7 +15,7 @@
    <children>
       <TabPane fx:id="tabs" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="351.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="49.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
-          <Tab fx:id="languages" text="%option.languageTab">
+          <Tab fx:id="languagesAndDateFormat" text="%option.languageTab">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="326.0" prefWidth="600.0">
                      <children>

@@ -7,10 +7,7 @@ package opendiabetesvaultgui.launcher;
 
 import com.sun.javafx.stage.StageHelper;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -47,22 +44,22 @@ public class FatherController {
      * Path to the resources of this application.
      */
     public static final String RESOURCE_PATH
-             = "opendiabetesvaultgui/languages/Languages";
+            = "opendiabetesvaultgui/languages/Languages";
     /**
      * Path to the main page: MainWindow.fxml.
      */
     public static final String MAIN_PAGE
-            = "fxmlfiles/MainWindow.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/MainWindow.fxml";
     /**
      * Path to the help page: HelpPage.fxml.
      */
     public static final String MAIN_HELP_PAGE
-            = "fxmlfiles/HelpPage.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/HelpPage.fxml";
     /**
      * Path to the option page: OptionWindow.fxml.
      */
     public static final String MAIN_OPTIONS_WINDOW
-            = "fxmlfiles/OptionsWindow.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/OptionsWindow.fxml";
     /**
      * Key for java preferences for the language label (ISO 639 language code).
      */
@@ -72,76 +69,71 @@ public class FatherController {
      */
     public static final String LANGUAGE_NAME = "currentLanguage";
     /**
-     * will be removed.
-     */
-    public static final String REMOVE_PAGE
-            = "fxmlfiles/RemoveWindow.fxml";
-    /**
      * Path to the edit page: EditWindow.fxml.
      */
     public static final String EDIT_PAGE
-            = "fxmlfiles/EditWindow.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/EditWindow.fxml";
     /**
      * Path to the import page: Imports.fmxl.
      */
     public static final String IMPORT_PAGE
-            = "fxmlfiles/Imports.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/Imports.fxml";
     /**
      * Path to the import plugin control page: PluginControl.fmxl.
      */
-    public static final String IMPORT_PLUGIN_CONTROL_PAGE
-            = "fxmlfiles/PluginControl.fxml";
+    public static final String PLUGIN_CONTROL_PAGE
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/PluginControl.fxml";
     /**
      * Path to the import plugin help page: PluginHelp.fmxl.
      */
-    public static final String IMPORT_PLUGIN_HELP_PAGE
-            = "fxmlfiles/PluginHelp.fxml";
+    public static final String PLUGIN_HELP_PAGE
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/PluginHelp.fxml";
     /**
      * Path to the export page: Exports.fxml.
      */
     public static final String EXPORT_PAGE
-            = "fxmlfiles/Exports.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/Exports.fxml";
     /**
      * Path to the patient selection page: PatientSelection.fxml.
      */
     public static final String PATIENT_SELECTION_PAGE
-            = "fxmlfiles/PatientSelection.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/PatientSelection.fxml";
 
     /**
      * Path to the process page: Process.fxml.
      */
     public static final String PROCESS_PAGE
-            = "fxmlfiles/Process.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/Process.fxml";
     /**
      * Path to the login page: Login.fxml.
      */
     public static final String LOGIN_PAGE
-            = "fxmlfiles/Login.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/Login.fxml";
     /**
      * Path to the database path chooser page: databasePathChooser.fxml.
      */
     public static final String DATABASE_PATH_CHOOSER
-            = "fxmlfiles/databasePathChooser.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/databasePathChooser.fxml";
     /**
      * Path to the password input page: InputPassword.fxml.
      */
     public static final String PASSWORD_INPUT_PAGE
-            = "fxmlfiles/InputPassword.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/InputPassword.fxml";
     /**
      * Path to the slice page: Slice.fxml.
      */
     public static final String SLICE_PAGE
-            = "fxmlfiles/Slice.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/Slice.fxml";
     /**
      * Path to the about page: AboutPage.fxml.
      */
     public static final String ABOUT_PAGE
-            = "fxmlfiles/AboutPage.fxml";
+            = "/opendiabetesvaultgui/launcher/fxmlfiles/AboutPage.fxml";
     /**
      * Path to the OpenDiabetesVault logo: logo_nude.png.
      */
     public static final String ICON
-            = "./src/opendiabetesvaultgui/shapes/logo_nude.png";
+            = "/opendiabetesvaultgui/shapes/logo_nude.png";
 
     /**
      * HashMap which saves the name of the language as key and the label as
@@ -161,11 +153,11 @@ public class FatherController {
 
     public static final Map<String, String> DATE_FORMATS
             = new HashMap<String, String>() {
-                {
-                    put("dd.MM.yyyy", "de");
-                    put("yyyy-MM-dd", "");
-                }
-            };
+        {
+            put("dd.MM.yyyy", "de");
+            put("yyyy-MM-dd", "");
+        }
+    };
 
     /**
      * HashMap which saves the name of the language as value and the label as
@@ -203,7 +195,7 @@ public class FatherController {
         FatherController.mainController = controller;
     }
     /**
-     * The curren stage openend with openPageAndCloseSameWindows.
+     * The curren stage openend with openPageSingleInstance.
      */
     private static Stage windowStage;
 
@@ -217,7 +209,7 @@ public class FatherController {
     }
 
     /**
-     * The curren stage openend with openPageAndCloseSameWindows.
+     * The curren stage openend with openPageSingleInstance.
      *
      * @return windowStage
      */
@@ -241,45 +233,27 @@ public class FatherController {
     }
 
     /**
-     * Create a URL from a string.
-     *
-     * @param path the string which will be convertsed to a URL
-     * @return the url of a path
-     * @throws java.net.MalformedURLException if path could not be parsed.
-     *
-     */
-    public final URL createURL(final String path)
-            throws MalformedURLException {
-
-        URL url = Paths.get(path).toUri().toURL();
-        return url;
-    }
-
-    /**
-     * Opens a page The modality of this window is WINDOW_MOADl and
-     * the owner is the MainStage.
+     * Opens a page. The modality of this window is WINDOW_MODAL and the owner is
+     * the MainStage.
      *
      * @param path the specific path of a fmxl file
-     * @param name the name of the page
+     * @param name the title of the page
      * @param resizable indicates if the page should be resizable
      * @param bundle the used ResourceBundle for localization
      *
      * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
-     * @throws java.net.URISyntaxException
      */
     public final void openPage(final String path,
             final String name, final Boolean resizable,
-            final ResourceBundle bundle) throws IOException, URISyntaxException {
+            final ResourceBundle bundle) throws IOException  {
 
-        Class fc = getFatherControllerClass();
-        URL url = fc.getResource(path).toURI().toURL();
+        URL url = getClass().getResource(path);
         FXMLLoader loader = new FXMLLoader(url,
                 bundle);
 
-        
         Parent root = loader.load();
         Stage stage = new Stage();
-        stage.getIcons().add(new Image(createURL(ICON).toString()));
+        stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
         Scene scene = new Scene(root);
         stage.setTitle(name);
         stage.setScene(scene);
@@ -292,16 +266,16 @@ public class FatherController {
     }
 
     /**
-     * Opens a fxml file. Each Page can only be active once at the
-     * same time. and is identified by its name.
+     * Opens a fxml file. Each Page can only be active once at the same time.
+     * and is identified by its name.
      *
      * @param path the specific path of a fmxl file
-     * @param name the name of the page
+     * @param name the title of the page
      * @param resizable indicates if the page should be resizable
      * @param bundle the used ResourceBundle for localization
      * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
      */
-    public final void openPageAndCloseSameWindows(final URL path,
+    public final void openPageSingleInstance(final String path,
             final String name, final Boolean resizable,
             final ResourceBundle bundle) throws IOException {
         ObservableList<Stage> stagesList
@@ -311,16 +285,18 @@ public class FatherController {
         if (!stagesList.isEmpty()) {
             stagesList.get(0).toFront();
         } else {
-            FXMLLoader loader = new FXMLLoader(path,
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path),
                     bundle);
             Parent root = loader.load();
             Stage stage = new Stage();
             stage.setResizable(resizable);
             Scene scene = new Scene(root);
+            stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
+
             stage.setTitle(name);
             stage.setScene(scene);
             stage.show();
-            if (path.equals(createURL(MAIN_HELP_PAGE))) {
+            if (path.equals(MAIN_HELP_PAGE)) {
                 HelpController controller
                         = (HelpController) loader.getController();
                 stage.setOnCloseRequest(e -> {
@@ -331,22 +307,20 @@ public class FatherController {
     }
 
     /**
-     * Deletes all children of the father_pane and inserts a pane
-     * into the father_pane. The inserted pane is binded to the father_pane.
+     * Deletes all children of the fatherPane and inserts a pane into the
+     * fatherPane. The inserted pane is binded to the fatherPane.
      *
      * @param path the specific path of a fmxl file
-     * @param fatherPane the pane in which the new pane will be inserted.
+     * @param fatherPane the pane, in which the new pane will be inserted.
      * @param bundle the used ResourceBundle for localization
      * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
-     * @throws java.net.URISyntaxException
      *
      */
     public final void changePane(final String path,
             final Pane fatherPane,
-            final ResourceBundle bundle) throws IOException, URISyntaxException {
+            final ResourceBundle bundle) throws IOException {
 
-        Class fc = getFatherControllerClass();
-        URL url = fc.getResource(path).toURI().toURL();
+        URL url = getClass().getResource(path);
         FXMLLoader loader = new FXMLLoader(url,
                 bundle);
         Pane newPane = loader.load();
@@ -356,10 +330,5 @@ public class FatherController {
         AnchorPane.setLeftAnchor(newPane, 0.0);
         AnchorPane.setRightAnchor(newPane, 0.0);
         AnchorPane.setTopAnchor(newPane, 0.0);
-    }
-    
-    public static Class getFatherControllerClass(){
-        FatherController fathercontroller = new FatherController();
-        return fathercontroller.getClass();
     }
 }

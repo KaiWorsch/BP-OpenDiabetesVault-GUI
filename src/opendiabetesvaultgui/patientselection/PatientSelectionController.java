@@ -6,8 +6,6 @@
 package opendiabetesvaultgui.patientselection;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.control.TableColumn;
@@ -157,13 +155,13 @@ public class PatientSelectionController extends FatherController
      * removes an entry out of the patient database.
      *
      * @param action Event: mouse click on the remove button
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws SQLException
+     * @throws IOException if failed or interrupted I/O operations.
+     * @throws SQLException if sql statements invalid.
+     * @throws java.text.ParseException if an error has been reached while parsing.
      */
     @FXML
     public final void removeAnEntry(final Event action)
-            throws MalformedURLException, IOException, SQLException, ParseException {
+            throws SQLException, ParseException, IOException {
         if (tableView.getSelectionModel().getSelectedCells().isEmpty()) {
             Alert alert = new Alert(AlertType.WARNING, "", okButton);
             alert.setTitle("OpenDiabetesVault");
@@ -179,7 +177,7 @@ public class PatientSelectionController extends FatherController
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
             //stage.getIcons().add(new Image(this.getClass().
             //getResource(ICON).toString()));
-            stage.getIcons().add(new Image(createURL(ICON).toString()));
+            stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
 
             alert.showAndWait();
         } else {
@@ -200,19 +198,14 @@ public class PatientSelectionController extends FatherController
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
             //stage.getIcons().add(new Image(this.getClass().
             //getResource(ICON).toString()));
-            stage.getIcons().add(new Image(createURL(ICON).toString()));
+            stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == okButton) {
                 // ... user chose OK
                 try {
-                    //Connection c = DBConnection.connect();
                     Statement stmt = c.createStatement();
-                    /*String query = "DELETE FROM PATIENT\n"
-                            + "WHERE surname='" + nameList.get(0) + "'"
-                            + "AND firstname='" + nameList.get(1) + "'"
-                            + "AND dob='" + nameList.get(2) + "'";*/
                     String query = "DELETE FROM PATIENT\n"
-                            + "WHERE id='" + nameList.get(0) + "';";
+                            + "WHERE id='" + nameList.get(0) + "';"; //nameList.get(0) = the selected ID
                     ResultSet rs = stmt.executeQuery(query);
                     refreshTableView();
                 } catch (SQLException e) {
@@ -227,38 +220,35 @@ public class PatientSelectionController extends FatherController
     }
 
     /**
-     * adds an entry into the patient database.
+     * Opens the EditWindow.fxml file without any content
+     * inside of it
      *
      * @param action Event: mouse click on the add button
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws InterruptedException
+     * @throws IOException if failed or interrupted I/O operations.
      */
     @FXML
     public final void addEntry(final Event action)
-            throws MalformedURLException, IOException, InterruptedException, URISyntaxException {
+            throws IOException {
         edit = false;
         openPage(EDIT_PAGE, resource.
                 getString("edit.addtitle"), false, resource);
         getWindowStage().setOnHiding((WindowEvent e) -> {
             try {
                 refreshTableView();
-            } catch (IOException ex) {
+            } catch (IOException | ParseException ex) {
                 Logger.getLogger(PatientSelectionController.class.getName()).
                         log(Level.SEVERE, null, ex);
-            } catch (ParseException ex) {
-                Logger.getLogger(PatientSelectionController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
-        //  refreshTableView();
     }
 
     /**
-     * builds the patient database.
+     * Retrieves all content of the database and stores it
+     * inside of the tableView.
      *
-     * @throws IOException
-     * @throws java.text.ParseException
+     * @throws IOException if failed or interrupted I/O operations.
+     * @throws java.text.ParseException if an error has been reached while parsing.
      */
     @SuppressWarnings("empty-statement")
     public final void buildData() throws IOException, ParseException {
@@ -342,9 +332,9 @@ public class PatientSelectionController extends FatherController
     /**
      * refreshes the tableview of the patient database.
      *
-     * @throws IOException if an error occurs at the buildData() function
-     * @throws java.text.ParseException
-     * @see buildData()
+     * @throws IOException if an error occurs at the buildData() function.
+     * @throws java.text.ParseException if an error has been reached while parsing.
+     * @see #buildData()
      */
     @FXML
     public final void refreshTableView() throws IOException, ParseException {
@@ -354,21 +344,19 @@ public class PatientSelectionController extends FatherController
         tableView.refresh();
         tableView.setItems(filtered);
         searchbar.setText("");
-
     }
 
     /**
-     * edits an entry of the patient database.
-     *
+     * Opens the EditWindow.fxml file with all information of the 
+     * selected entry already inside of it.
+     * 
      * @param action Event: mouse click on the edit button
-     * @throws SQLException
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws java.net.URISyntaxException
+     * @throws SQLException if an error has been reached while parsing.
+     * @throws IOException if an error occurs at the buildData() function.
      */
     @FXML
     public final void editData(final Event action)
-            throws SQLException, MalformedURLException, IOException, URISyntaxException {
+            throws SQLException, IOException {
         if (tableView.getSelectionModel().getSelectedCells().isEmpty()) {
             Alert editWarning = new Alert(AlertType.WARNING, "", okButton);
             editWarning.setTitle("OpenDiabetesVault");
@@ -385,7 +373,7 @@ public class PatientSelectionController extends FatherController
                     getWindow();
             //stage.getIcons().add(new Image(this.getClass().getResource(ICON).
             //toString()));
-            stage.getIcons().add(new Image(createURL(ICON).toString()));
+            stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
             editWarning.showAndWait();
         } else {
             edit = true;
@@ -394,11 +382,9 @@ public class PatientSelectionController extends FatherController
             getWindowStage().setOnHiding((WindowEvent e) -> {
                 try {
                     refreshTableView();
-                } catch (IOException ex) {
+                } catch (IOException | ParseException ex) {
                     Logger.getLogger(PatientSelectionController.class.
                             getName()).log(Level.SEVERE, null, ex);
-                } catch (ParseException ex) {
-                    Logger.getLogger(PatientSelectionController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             );
@@ -408,7 +394,8 @@ public class PatientSelectionController extends FatherController
     }
 
     /**
-     *
+     * Returns the edit Boolean
+     * 
      * @return edit
      */
     public static Boolean isEdit() {
@@ -416,7 +403,8 @@ public class PatientSelectionController extends FatherController
     }
 
     /**
-     *
+     * Returns the nameList
+     * 
      * @return nameList
      */
     public static ObservableList getNameList() {
@@ -463,6 +451,8 @@ public class PatientSelectionController extends FatherController
         } catch (IOException ex) {
             Logger.getLogger(PatientSelectionController.class.getName()).
                     log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(PatientSelectionController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {

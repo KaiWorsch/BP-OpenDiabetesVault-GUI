@@ -7,12 +7,9 @@ package opendiabetesvaultgui.login;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -72,8 +69,8 @@ public class DatabasePathChooserController extends FatherController
     /**
      * Initializes the controller class.
      *
-     * @param url
-     * @param rb
+     * @param url the url of the dataBasePathChooser
+     * @param rb the passed ResourceBundle
      */
     @Override
     public final void initialize(final URL url, final ResourceBundle rb) {
@@ -84,16 +81,18 @@ public class DatabasePathChooserController extends FatherController
     }
 
     /**
-     * TODO: add or remove function.
-     * @param event the event to react to
+     * Not implemented yet.
+     *
+     * @param event calls method when triggered
      */
     @FXML
     private void listenToText(final ActionEvent event) {
     }
 
     /**
-     * choses and saves a new path.
-     * @param event the event to trigger this function
+     * Choses and saves a new path.
+     *
+     * @param event the event to trigger this method
      */
     @FXML
     private void choosePath(final ActionEvent event) {
@@ -111,23 +110,18 @@ public class DatabasePathChooserController extends FatherController
     }
 
     /**
-     * 
-     * @param event
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws BackingStoreException 
+     * Saves the database path as a preference and opens the main window.
+     * @param event calls method when triggered
+     * @throws IOException if  the  MainWindow.fxml or the passed ResourceBundle wasnt found
      */
     @FXML
-    private void acceptChanges(final ActionEvent event)
-            throws MalformedURLException, IOException, BackingStoreException, URISyntaxException {
+    private void acceptChanges(final ActionEvent event) throws IOException {
         PREFS_FOR_ALL.put("pathDatabase", pathField.getText());
         acceptButton.getScene().getWindow().hide();
-        Class fc = FatherController.getFatherControllerClass();
-        openMainWindow(fc.getResource(MAIN_PAGE).toURI().toURL());
+        openMainWindow(getClass().getResource(MAIN_PAGE));
     }
 
-    private void openMainWindow(final URL path) throws IOException,
-            BackingStoreException {
+    private void openMainWindow(final URL path) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(path,
                 ResourceBundle.getBundle(RESOURCE_PATH, new Locale(
@@ -136,7 +130,7 @@ public class DatabasePathChooserController extends FatherController
         Scene scene = new Scene(root);
         setPreferences(MAIN_STAGE);
         setMainWindowController((MainWindowController) loader.getController());
-        MAIN_STAGE.getIcons().add(new Image(createURL(ICON).toString()));
+        MAIN_STAGE.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
         MAIN_STAGE.setScene(scene);
 
         MAIN_STAGE.show();
@@ -144,6 +138,17 @@ public class DatabasePathChooserController extends FatherController
         savePreferencesListener(MAIN_STAGE);
     }
 
+    
+    
+     /**
+     * Sets the position and size of a stage to the values saved as
+     * preferences. The keys are windowWidth, windowHeight,
+     * windowPositionX and windowPositionY. If this stage closes the whole
+     * appliaction closes too.
+     *
+     *
+     * @param stage the stage, which size and position should be set
+     */
     private void setPreferences(final Stage stage) {
 
         stage.setMinHeight((SCREEN_BOUNDS.getHeight()) * defaultSizeMultiplier);
@@ -184,6 +189,14 @@ public class DatabasePathChooserController extends FatherController
 
     }
 
+    /**
+     * Saves the position and size of a stage as preferences,
+     * when the stage is closing. The keys are windowWidth, windowHeight,
+     * windowPositionX and windowPositionY. If this stage closes the whole
+     * appliaction closes too.
+     *
+     * @param stage the stage that will be closed
+     */
     private void savePreferencesListener(final Stage stage) {
         stage.setOnCloseRequest((WindowEvent e) -> {
 

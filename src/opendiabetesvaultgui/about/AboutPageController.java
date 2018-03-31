@@ -54,41 +54,38 @@ public class AboutPageController implements Initializable {
     private Hyperlink donationLink;
 
     /**
-     * Resource Bundle.
+     * The the passed ResourceBundle.
      */
     @FXML
     private ResourceBundle myResource;
 
     /**
-     * Textfield, not visible.
+     * Displays the main text of the page.
      */
     @FXML
     private TextArea text;
 
-
     /**
      * Initializes the controller class.
      *
-     * @param url Url
-     * @param rb ResourceBundle
+     * @param url Url the url to About.fxml
+     * @param rb ResourceBundle the used ResourceBundle for localization
      */
     @Override
     public final void initialize(final URL url, final ResourceBundle rb) {
-
 
         Font.loadFont(MainWindowController.class.getResource(
                 "/opendiabetesvaultgui/stylesheets/fonts/Roboto-Regular.ttf").
                 toExternalForm(), 10);
         text.setPadding(new Insets(2));
-
-        // TODO
     }
 
     /**
-     * This method will be executed as soon as a link is clicked.
-     * Not finished yet.
      *
-     * @param event an ActionEvent
+     * NOT IMPLEMENTED YET. This method will be executed as soon as a link is
+     * clicked.
+     *
+     * @param event when triggered calls method
      */
     @FXML
     private void handleLinkAction(final ActionEvent event) {

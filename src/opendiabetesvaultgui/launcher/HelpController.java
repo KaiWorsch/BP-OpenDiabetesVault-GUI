@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -49,18 +50,21 @@ public class HelpController extends FatherController implements Initializable {
     public final void initialize(final URL location,
             final ResourceBundle resources) {
         try {
+
             String path;
             path = getPagePath(MainWindowController.getPage(),
                     MainWindowController.getLanguage());
-            loadPage(path);
+            loadPage(path);           
+          
         } catch (IOException ex) {
             Logger.getLogger(HelpController.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
-     * gets a path of a .md file & loads the content into a helppage.
+     * Gets a path of a md file and loads the content into a helppage.
      *
      * @param path the path to the .md file
      * @throws IOException if read from file goes wrong
@@ -75,7 +79,7 @@ public class HelpController extends FatherController implements Initializable {
             // for loading html into the webview-browser
             final WebEngine webEngine = webview.getEngine();
             String pathToHtmlFile;
-            pathToHtmlFile = "src/opendiabetesvaultgui/launcher/help_tmp.html";
+            pathToHtmlFile = "resources/help/helpTMP.html";
             File tmp = new File(pathToHtmlFile);
             // passes the local file into a url
             URL url = tmp.toURI().toURL();
@@ -98,34 +102,38 @@ public class HelpController extends FatherController implements Initializable {
      * @return path a string of the path to the .md file
      */
     private String getPagePath(final int pageID, final String language) {
-        final int zero = 0; // constants for the switch/case-statement
-        final int one = 1;
-        final int two = 2;
-        final int three = 3;
-        final int four = 4;
+        final int zero = MainWindowController.getPATIENT_SELECTION_ID(); // constants for the switch/case-statement
+        final int one = MainWindowController.getIMPORT_ID();
+        final int two = MainWindowController.getSLICE_ID();
+        final int three = MainWindowController.getPROCESS_ID();
+        final int four = MainWindowController.getEXPORT_ID();
 
-        String path; // = "src/opendiabetesVaultGui/wiki/" + language + "/";
+        String path; 
         String lang;
         if ("English".equals(PREFS_FOR_ALL.get(LANGUAGE_NAME, ""))) {
-            path = "src/opendiabetesvaultgui/launcher/help/en/";
+            path = "resources/help/en/";
             lang = "EN.md";
         } else {
-            path = "src/opendiabetesvaultgui/launcher/help/" + language + "/";
+            path = "resources/help/" + language + "/";
             lang = language.toUpperCase(Locale.ENGLISH) + ".md";
         }
-        switch (pageID) {
-            case zero:
-                return path + "PatientSelectionHelp" + lang;
-            case one:
-                return path + "ImportHelp" + lang;
-            case two:
-                return path + "SliceHelp" + lang;
-            case three:
-                return path + "ProcessHelp" + lang;
-            case four:
-                return path + "ExportHelp" + lang;
-            default:
-                return path + "Wiki" + lang;
+        if (pageID == zero ){
+            return path + "PatientSelectionHelp" + lang;
+        }
+        else if (pageID == one){
+            return path + "ImportHelp" + lang;
+        } 
+        else if (pageID == two){
+            return path + "SliceHelp" + lang;
+        }
+        else if (pageID == three){
+            return path + "ProcessHelp" + lang;
+        }
+        else if (pageID == four){
+            return path + "ExportHelp" + lang;
+        }
+        else {
+                return path + "Default" + lang;
         }
     }
 
@@ -139,30 +147,31 @@ public class HelpController extends FatherController implements Initializable {
 
         FileOutputStream fileStream = null;
         OutputStreamWriter writer;
-      try {
-        fileStream = new FileOutputStream(
-        new File("src/opendiabetesvaultgui/launcher/help_tmp.html"));
-        writer = new OutputStreamWriter(fileStream, "UTF-8");
-        writer.write(text);
-        writer.flush();
-        writer.close();
-        fileStream.flush();
-        fileStream.close();
-      } catch (IOException e) {
-          System.out.println(e.getMessage());
-      } finally {
-          try {
-              if ((fileStream != null)) {
-                  fileStream.close();
-              }
-          } catch (IOException e) {
-              System.out.println(e.getMessage());
-          }
-      }
+        try {
+            fileStream = new FileOutputStream(
+            new File("resources/help/helpTMP.html"));
+            writer = new OutputStreamWriter(fileStream, "UTF-8");
+            writer.write(text);
+            writer.flush();
+            writer.close();
+            fileStream.flush();
+            fileStream.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if ((fileStream != null)) {
+                    fileStream.close();
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     /**
      * webview getter method.
+     *
      * @return webview
      */
     public final WebView getWebview() {

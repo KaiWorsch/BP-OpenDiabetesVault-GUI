@@ -38,7 +38,7 @@ import static opendiabetesvaultgui.launcher.FatherController.PREFS_FOR_ALL;
 /**
  * FXML Controller class
  *
- * @author schae_000
+ * @author Daniel
  */
 public class EditWindowController implements Initializable {
 
@@ -107,8 +107,8 @@ public class EditWindowController implements Initializable {
     public int monthText;
     public int yearText;
 
-    public EditWindowController() throws SQLException, IOException {
-        this.conn = DBConnection.connect();
+    public EditWindowController() throws SQLException, IOException, ClassNotFoundException {
+        this.conn = DBConnection.getConnection();
     }
 
     /**
@@ -314,8 +314,8 @@ public class EditWindowController implements Initializable {
      * Checks, wheter User Input is valid. If so, database info will be altered.
      * If not, the user gets visual feedback in gui
      *
-     * @param event
-     * @throws SQLException
+     * @author Daniel Schäfer, Martin Steil, Julian Schwind, Kai Worsch
+     * @param event  ActionEvent
      *
      */
     @FXML
@@ -337,8 +337,13 @@ public class EditWindowController implements Initializable {
                             + "AND firstname='" + inputList.get(1) + "'\n"
                             + "AND dob='" + oldYear + "-" + oldMonth + "-" + oldDay + "';";*/
                     String query = "UPDATE PATIENT\n"
-                            + "SET surname='" + lastnameInput.getText() + "', firstname='" + firstnameInput.getText() + "', dob='" + yearInput.getText() + "-" + monthInput.getText() + "-" + dayInput.getText() + "'\n"
-                            + "WHERE id='" + inputList.get(0) + "';";
+                            + "SET surname='" 
+                            + lastnameInput.getText() + "', firstname='"    //the input from the surname textfield
+                            + firstnameInput.getText() + "', dob='"         //the input from the firstname textfield
+                            + yearInput.getText() + "-"                     //the input from the yearInput textfield
+                            + monthInput.getText() + "-"                    //the input from the monthInput textfield
+                            + dayInput.getText() + "'\n"                    //the input from the dayInput textfield
+                            + "WHERE id='" + inputList.get(0) + "';";       //the id from the selected entry
                     //System.out.print(query);
                     ResultSet rs = stmt.executeQuery(query);
                     ((Node) (event.getSource())).getScene().getWindow().hide();
@@ -428,8 +433,14 @@ public class EditWindowController implements Initializable {
                         monthInput.setText("0" + monthInput.getText());
                     }
                     Statement stmt = conn.createStatement();
-                    String query = "INSERT INTO PATIENT (surname, firstname, dob)" + System.lineSeparator()
-                            + "VALUES('" + lastnameInput.getText() + "', '" + firstnameInput.getText() + "', '" + yearInput.getText() + "-" + monthInput.getText() + "-" + dayInput.getText() + "');";
+                    String query = "INSERT INTO PATIENT (surname, firstname, dob)"
+                            + System.lineSeparator()
+                            + "VALUES('"
+                            + lastnameInput.getText() + "', '"      //the input from the surname textfield
+                            + firstnameInput.getText() + "', '"     //the input from the firstname textfield
+                            + yearInput.getText() + "-"             //the input from the yearInput textfield
+                            + monthInput.getText() + "-"            //the input from the monthInput textfield
+                            + dayInput.getText() + "');";           //the input from the dayInput textfield
                     //System.out.print(query);
 
                     ResultSet rs = stmt.executeQuery(query);
@@ -516,7 +527,7 @@ public class EditWindowController implements Initializable {
      * Returns true when inputdate is a valid date Otherwise false
      *
      * @param dateInput Current date that was given by user input
-     * @return Boolean
+     * @return Boolean true or false
      */
     public boolean isDateValid(String dateInput) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

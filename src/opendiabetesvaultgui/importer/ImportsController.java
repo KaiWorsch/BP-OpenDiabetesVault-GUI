@@ -13,10 +13,7 @@ import de.opendiabetes.vault.plugin.interpreter.Interpreter;
 import de.opendiabetes.vault.plugin.management.OpenDiabetesPluginManager;
 import de.opendiabetes.vault.plugin.util.HelpLanguage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -45,7 +42,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -59,6 +55,7 @@ import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -66,14 +63,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import opendiabetesvaultgui.launcher.MainWindowController;
 
 /**
  * FXML Controller class.
  *
- * @author kai
+ * @author Daniel Schäfer, Martin Steil, Julian Schwind, Kai Worsch
  */
 public class ImportsController extends FatherController
         implements Initializable {
@@ -96,8 +93,6 @@ public class ImportsController extends FatherController
     @FXML
     private Accordion accord;
 
-    public String buttonPath = "./src/opendiabetesvaultgui/shapes/test.css";
-
     private OpenDiabetesPluginManager pluginManager;
 
     private ResourceBundle myResource;
@@ -112,8 +107,8 @@ public class ImportsController extends FatherController
     /**
      * initializes the controller class.
      *
-     * @param location
-     * @param resources
+     * @param location the url of Imports.fxml
+     * @param resources the passed ResourceBundle
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -152,7 +147,6 @@ public class ImportsController extends FatherController
             try {
                 importDisplay.getChildren().add(createImportPlugin(importPlugins.
                         get(i), (FileImporter) plugin));
-            } catch (MalformedURLException ex) {
             } catch (Exception ex) {
                 Logger.getLogger(ImportsController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -173,12 +167,31 @@ public class ImportsController extends FatherController
         });
     }
 
+    /**
+     * Remove every elment from the passed list, whose type isnt an instance of
+     * clazz.
+     *
+     * @param <E> the type of elements in this list
+     * @param list list which needs to be filtered
+     * @param clazz the class to be filtered.
+     * @return the filtered list
+     */
     private <E> boolean containsInstance(List<E> list, Class<? extends E> clazz) {
         return list.stream().anyMatch(e -> clazz.isInstance(e));
     }
 
-    private TitledPane createImportPlugin(String name, FileImporter plugin)
-            throws MalformedURLException, Exception {
+    /**
+     * Creates a Importer plugin as TitledPane. All necessary elements for the
+     * plugin will be created, designed and positioned. Methods will be assigned
+     * to specific elements. If the passed plugin has compatible Interpreter,
+     * new Interpreter specific elements will also be added.
+     *
+     * @param name the name of the plugin
+     * @param plugin the passed plugin
+     * @return the TitledPane
+     * @throws Exception if the help page wasnt found
+     */
+    public TitledPane createImportPlugin(String name, FileImporter plugin) throws Exception {
 
         AnchorPane content = new AnchorPane();
         ProgressBar progress = new ProgressBar();
@@ -193,9 +206,6 @@ public class ImportsController extends FatherController
         String file = "export/" + pluginManager.pluginToString(plugin) + "-0.0.1/"
                 + pluginManager.pluginToString(plugin) + ".properties";
 
-        Properties pro = new Properties();
-        pro.load(new FileInputStream(file));
-        plugin.loadConfiguration(pro);
         List<VaultEntry> importedData = new ArrayList<>();
         List<VaultEntry> interpretedData = new ArrayList<>();
 
@@ -205,7 +215,7 @@ public class ImportsController extends FatherController
         final int i;
         Button interpreterButton = new Button(myResource.getString("import.interpreterButton"));
 
-        if (!compatiblePlugins.isEmpty()) {
+        if (true) {
             pluginManager.pluginsFromStringList(compatiblePlugins);
             //     pluginManager.getPluginFromString(, file) 
             if (containsInstance(pluginManager.pluginsFromStringList(compatiblePlugins), Interpreter.class)) {
@@ -214,11 +224,71 @@ public class ImportsController extends FatherController
                         -> pluginManager.getPluginFromString(Interpreter.class, p) != null);
                 ComboBox selectInterpreter = new ComboBox(FXCollections.observableArrayList(filtered));
 
-                selectInterpreter.relocate(510, 80);
-                list.add(selectInterpreter);
+                Rectangle comboBoxBox = new Rectangle();
+                comboBoxBox.setWidth(230);
+                comboBoxBox.setHeight(49);
+                comboBoxBox.setSmooth(true);
+                comboBoxBox.setId("comboBoxBox");
+
+                Rectangle comboBoxRectangle = new Rectangle();
+                comboBoxRectangle.setWidth(230);
+                comboBoxRectangle.setHeight(1.5);
+                comboBoxRectangle.setSmooth(true);
+                comboBoxRectangle.setId("comboBoxRectangle");
+
+                Label interpreterLabel = new Label(myResource.getString("import.fieldLabel"));
+                interpreterLabel.setId("interpreterLabel");
+
+                selectInterpreter.setPrefSize(230, 25);
+                selectInterpreter.relocate(510, 55);
                 interpreterButton.setDisable(true);
-                interpreterButton.relocate(380, 80);
-                list.add(interpreterButton);
+                interpreterButton.relocate(620, 100);
+                interpreterButton.setPrefWidth(120);
+
+                ////////////////////////////////
+                SVGPath gearInterpreter = new SVGPath();
+                gearInterpreter.setContent("M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2."
+                        + "11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-."
+                        + "22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2."
+                        + "18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61."
+                        + "25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3."
+                        + "46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s."
+                        + "03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22."
+                        + "39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24."
+                        + "42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1."
+                        + "69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-."
+                        + "12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3."
+                        + "5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z");
+                gearInterpreter.setStyle("-fx-fill: #007399");
+                Circle hitBoxGearInterpreter = new Circle(10);
+                hitBoxGearInterpreter.setOpacity(0);
+                hitBoxGearInterpreter.setCursor(Cursor.HAND);
+
+                SVGPath helpSignInterpreter = new SVGPath();
+                helpSignInterpreter.setContent("M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4."
+                        + "48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3."
+                        + "59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1."
+                        + "79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2."
+                        + "5 3-5 0-2.21-1.79-4-4-4z");
+                /*helpSign.setRotationAxis(Rotate.X_AXIS);
+        helpSign.setRotate(180);*/
+                helpSignInterpreter.setStyle("-fx-fill: #007399;");
+
+                Circle hitBoxHelpSignInterpreter = new Circle(10);
+                hitBoxHelpSignInterpreter.setCursor(Cursor.HAND);
+                hitBoxHelpSignInterpreter.setOpacity(0);
+
+                hitBoxGearInterpreter.relocate(680, 10);
+                hitBoxHelpSignInterpreter.relocate(720, 10);
+
+                helpSignInterpreter.relocate(hitBoxHelpSignInterpreter.getLayoutX() - 11, hitBoxHelpSignInterpreter.
+                        getLayoutY() - 11);
+                gearInterpreter.relocate(hitBoxGearInterpreter.getLayoutX() - 11, hitBoxGearInterpreter.
+                        getLayoutY() - 11);
+
+                ////////////////////////////////////////
+                // neue position impotieren  interpreterButton.relocate(380, 80);
+                list.addAll(Arrays.asList(comboBoxBox, comboBoxRectangle, interpreterButton, selectInterpreter, gearInterpreter, hitBoxGearInterpreter, helpSignInterpreter, hitBoxHelpSignInterpreter, interpreterLabel));
 
                 interpreterButton.setOnAction((ActionEvent action) -> {
                     Interpreter interpreter
@@ -260,20 +330,20 @@ public class ImportsController extends FatherController
             try {
                 openPluginControll(name + " " + myResource.
                         getString("import.pluginControlTitle"));
-            } catch (IOException | URISyntaxException ex) {
+            } catch (IOException ex) {
                 Logger.getLogger(ImportsController.class.getName()).
                         log(Level.SEVERE, null, ex);
             }
         });
 
-        Rectangle hitBoxHelpSign = new Rectangle(16, 25);
+        Circle hitBoxHelpSign = new Circle(10);
         hitBoxHelpSign.setCursor(Cursor.HAND);
         hitBoxHelpSign.setOpacity(0);
         hitBoxHelpSign.setOnMouseClicked((MouseEvent event) -> {
             try {
                 openPluginHelp(helpPath.toString(), name + " " + myResource.
                         getString("import.pluginHelpTitle"));
-            } catch (IOException | URISyntaxException ex) {
+            } catch (IOException ex) {
                 Logger.getLogger(ImportsController.class.getName())
                         .log(Level.SEVERE, null, ex);
             }
@@ -287,11 +357,15 @@ public class ImportsController extends FatherController
         /*helpSign.setRotationAxis(Rotate.X_AXIS);
         helpSign.setRotate(180);*/
         helpSign.setStyle("-fx-fill: #007399;");
-        importButton.relocate(18, 80);
-        hitBoxGear.relocate(540, 11);
-        hitBoxHelpSign.relocate(580, 10);
-        helpSign.relocate(hitBoxHelpSign.getLayoutX(), hitBoxHelpSign.
-                getLayoutY());
+        importButton.relocate(390, 100);
+
+        // position auswählbutton importButton.relocate(18, 100);
+        // interpter positon     hitBoxGear.relocate(540, 11);
+        // interpreter position  hitBoxHelpSign.relocate(580, 10);
+        hitBoxGear.relocate(420, 11);
+        hitBoxHelpSign.relocate(460, 10);
+        helpSign.relocate(hitBoxHelpSign.getLayoutX() - 11, hitBoxHelpSign.
+                getLayoutY() - 11);
         gear.relocate(hitBoxGear.getLayoutX() - 11, hitBoxGear.
                 getLayoutY() - 11);
         Button browseButton = new Button(myResource.
@@ -302,8 +376,8 @@ public class ImportsController extends FatherController
             chooseFiles(action, field);
         });
 
-        browseButton.relocate(510, 40);
-        field.relocate(20, 40);
+        browseButton.relocate(18, 100);
+        field.relocate(20, 55);
         field.setPrefWidth(465);
         field.setPrefHeight(25);
         field.setId("importPfad");
@@ -347,7 +421,7 @@ public class ImportsController extends FatherController
         teste.setVbarPolicy(ScrollBarPolicy.NEVER);
         teste.fitToHeightProperty();
 
-        pane.setGraphic(createHbox(name, pane, progress));
+        pane.setGraphic(createBorderPane(name, pane, progress, importButton));
 
         pane.setAnimated(true);
 
@@ -374,70 +448,99 @@ public class ImportsController extends FatherController
         return pane;
     }
 
-    private HBox createHbox(String name, TitledPane pane, ProgressBar progress) {
-        HBox hbox = new HBox();
-        hbox.setSpacing(10);
-        CheckBox disBox = new CheckBox("");
+    /**
+     * Creates a Borderpane consisting of a Checkbox and ProgressBar. The
+     * element will be positioned using methods of the BorderPane. Calls {@link #checkBoxListener(CheckBox box, TitledPane target, String name,
+     * BorderPane bPane, Button button)}
+     *
+     *
+     * @param name the title of a TitledPane
+     * @param pane the respective a TitledPane
+     * @param progress a ProgressBar
+     * @param button the Button passed to the checkBoxListener
+     * @return the BorderPane
+     * @see #getFileString(Stage stage)
+     *
+     */
+    public BorderPane createBorderPane(String name, TitledPane pane, ProgressBar progress, Button button) {
+        BorderPane bPane = new BorderPane();
+        CheckBox cBox = new CheckBox("");
         if (prefs.getBoolean(name, false)) {
-            //   pane.setDisable(true);
             pane.setCollapsible(true);
             pane.setCollapsible(false);
             pane.setExpanded(false);
         } else {
-            disBox.selectedProperty().set(true);
+            cBox.selectedProperty().set(true);
         }
         Label title = new Label(name);
         progress.setProgress(0);
         progress.setPrefWidth(300);
         progress.setPrefHeight(20);
-        Region filler1 = new Region();
-        HBox.setHgrow(filler1, Priority.ALWAYS);
-        Region filler2 = new Region();
-        HBox.setHgrow(filler2, Priority.ALWAYS);
-        hbox.getChildren().addAll(title, filler1, disBox, filler2, progress);
-        checkBoxListener(disBox, pane, name, hbox);
-
-        return hbox;
+        bPane.setPadding(new Insets(5, 10, 5, 10));
+        bPane.autosize();
+        bPane.setLeft(cBox);
+        BorderPane centerPane = new BorderPane();
+        centerPane.setPadding(new Insets(0, 0, 0, 10));
+        centerPane.setLeft(title);
+        Region centerFiller = new Region();
+        centerFiller.setMinWidth(20);
+        Region rightFiller = new Region();
+        rightFiller.setMinWidth(20);
+        centerPane.setCenter(centerFiller);
+        centerPane.setRight(rightFiller);
+        bPane.setCenter(centerPane);
+        bPane.setRight(progress);
+        bPane.prefWidthProperty().bind(pane.widthProperty().subtract(200));
+        checkBoxListener(cBox, pane, name, bPane, button);
+        return bPane;
     }
 
+    /**
+     * Adds listener to CheckBoxe's selectedProperty(). CheckBox state
+     * determines, if the TitledPane is collapsible.
+     *
+     * @param box the checkbox from the TitledPane
+     * @param target the TitledPane
+     * @param name title of the TitledPane
+     * @param bPane the BorderPane inside of the TitledPane
+     * @param button the Button, which should be deactivatable.
+     */
     private void checkBoxListener(CheckBox box, TitledPane target, String name,
-            final HBox hbox) {
+            BorderPane bPane, Button button) {
         box.selectedProperty().addListener((ObservableValue<? extends Boolean> observable,
                 Boolean oldValue, Boolean newValue)
                 -> {
 
             target.setExpanded(false);
             target.setCollapsible(newValue);
+            button.setDisable(!newValue);
             //  prefs.putBoolean(name, !newValue);
         });
     }
 
     /**
-     * opens the control page as a popup.
+     * Opens the control page as a popup.
      *
-     * @author Kai, Julian
-     * @param name
-     * @throws java.net.MalformedURLException
+     * @param name title of the window.
+     * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
+     *
+     *
      */
-    private void openPluginControll(String name)
-            throws MalformedURLException, IOException, URISyntaxException {
-        openPage(IMPORT_PLUGIN_CONTROL_PAGE, name, false,
+    private void openPluginControll(String name) throws IOException {
+        openPage(PLUGIN_CONTROL_PAGE, name, false,
                 myResource);
     }
 
     /**
-     * Opens the help page as a popup.
+     * Opens the window, which displays a help page.
      *
-     * @author Kai, Julian
      * @param path the path to the help page
      * @param title the title of the help page
-     * @throws java.net.MalformedURLException if the created URL could not be
-     * parsed.
+     * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
+     *
      */
-    private void openPluginHelp(String path, String title)
-            throws MalformedURLException, IOException, URISyntaxException {
-        Class fc = FatherController.getFatherControllerClass();
-        URL url = fc.getResource(IMPORT_PLUGIN_HELP_PAGE).toURI().toURL();
+    public void openPluginHelp(String path, String title) throws IOException {
+        URL url = getClass().getResource(PLUGIN_HELP_PAGE);
         FXMLLoader loader = new FXMLLoader(url,
                 myResource);
         Parent root = loader.load();
@@ -453,27 +556,26 @@ public class ImportsController extends FatherController
 
     /**
      * Saves the path of the chosen file inside a textfield and is assigend to
-     * the {@link this#importButton}.
+     * the #importButton.
      *
-     * @see {@link this#getFileString(Stage stage))}
+     * @see #getFileString(Stage stage)
      *
      * @param event calls method when triggered.
-     * @param pathField the textfield in which the path is saved
-     *
+     * @param pathField the textfield in which the path is saved.
      */
     @FXML
     private void chooseFiles(final ActionEvent event, final TextField pathField) {
         Stage stage = (Stage) ((Node) (event.getSource())).getScene().
                 getWindow();
         pathField.setText(getFileString(stage));
-
     }
 
     /**
-     * Opens a fileChooser.
+     * Opens a fileChooser. Multiple data paths will concatenated to one String
+     * seperated by ;.
      *
      * @param stage stage which displays the filechooser
-     * @return The path of the chosen file
+     * @return The path of the chosen file/files
      */
     private String getFileString(Stage stage) {
 

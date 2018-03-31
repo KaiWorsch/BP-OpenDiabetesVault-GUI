@@ -7,7 +7,7 @@ package opendiabetesvaultgui.slice;
 
 /**
  *
- * @author juan
+ * @author Daniel Schäfer, Martin Steil, Julian Schwind, Kai Worsch
  */
 public class SliceController {
 

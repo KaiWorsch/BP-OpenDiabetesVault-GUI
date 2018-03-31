@@ -6,7 +6,6 @@
 package opendiabetesvaultgui.login;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -15,11 +14,8 @@ import java.util.prefs.Preferences;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -34,10 +30,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import opendiabetesvaultgui.launcher.FatherController;
 import opendiabetesvaultgui.launcher.MainWindowController;
-import de.opendiabetes.vault.container.VaultEntry;
-import de.opendiabetes.vault.plugin.fileimporter.FileImporter;
-import de.opendiabetes.vault.plugin.management.OpenDiabetesPluginManager;
-import java.net.URISyntaxException;
 
 /**
  * FXML Controller class
@@ -75,12 +67,12 @@ public class LoginController extends FatherController implements Initializable {
      * @param action ActionEvent: when triggered calls method
      * @throws java.security.NoSuchAlgorithmException if the used hashfunction
      * wasnt found
-     * @throws java.net.MalformedURLException
-     * @throws java.io.IOException
-     * @throws java.util.prefs.BackingStoreException
+     * @throws java.io.IOException if the fxml file or the ResourceBundle wasnt
+     * found
+     *
      */
     @FXML
-    private void passwordLogin(ActionEvent action) throws NoSuchAlgorithmException, MalformedURLException, BackingStoreException, IOException, URISyntaxException {
+    private void passwordLogin(ActionEvent action) throws NoSuchAlgorithmException, IOException {
         if (!(password == null) && (!password.getText().isEmpty())) {
             MessageDigest hashFunction = MessageDigest.getInstance("SHA-256");
             hashFunction.update(password.getText().getBytes("UTF-8"));
@@ -129,13 +121,10 @@ public class LoginController extends FatherController implements Initializable {
      *
      *
      * @param e KeyEvent which calls this function
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.io.UnsupportedEncodingException
-     * @throws java.net.MalformedURLException
+     *
      */
     @FXML
-    private void passwordLoginKey(KeyEvent e)
-            throws NoSuchAlgorithmException, UnsupportedEncodingException, MalformedURLException, IOException {
+    private void passwordLoginKey(KeyEvent e) {
 
         if (e.getCode() == KeyCode.ENTER) {
             login.fire();
@@ -148,7 +137,7 @@ public class LoginController extends FatherController implements Initializable {
      * Initializes the controller class.
      *
      * @param location the url of OptionsWindow.fxml
-     * @param resources the used resource bundle
+     * @param resources the passed ResourceBundle
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -161,21 +150,19 @@ public class LoginController extends FatherController implements Initializable {
      * determined by the values saved in the java preferences.
      *
      * @param path url of the fxml file
-     * @throws java.io.IOException
-     * @throws java.util.prefs.BackingStoreException
+     * @throws java.io.IOException if the fxml file or the ResourceBundle wasnt
+     * found
+     *
      */
-    private void openMainWindow(final String path) throws IOException,
-            BackingStoreException,
-            URISyntaxException {
-            Class fc = FatherController.getFatherControllerClass();
-            URL url = fc.getResource(path).toURI().toURL();
+    private void openMainWindow(final String path) throws IOException {
+        URL url = getClass().getResource(path);
         FXMLLoader loader = new FXMLLoader(url,
                 myResource);
         Parent root = loader.load();
         Scene scene = new Scene(root);
         setPreferences(MAIN_STAGE);
         setMainWindowController((MainWindowController) loader.getController());
-        MAIN_STAGE.getIcons().add(new Image(createURL(ICON).toString()));
+        MAIN_STAGE.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
         MAIN_STAGE.setScene(scene);
 
         MAIN_STAGE.show();
@@ -184,8 +171,8 @@ public class LoginController extends FatherController implements Initializable {
     }
 
     /**
-     * This method sets the position and size of a stage to the values saved in
-     * the java preferences. The keys are windowWidth, windowHeight,
+     * Sets the position and size of a stage to the values saved as
+     * preferences. The keys are windowWidth, windowHeight,
      * windowPositionX and windowPositionY. If this stage closes the whole
      * appliaction closes too.
      *
@@ -237,7 +224,7 @@ public class LoginController extends FatherController implements Initializable {
     }
 
     /**
-     * This method saves the position and size of a stage in java preferences,
+     * Saves the position and size of a stage as preferences,
      * when the stage is closing. The keys are windowWidth, windowHeight,
      * windowPositionX and windowPositionY. If this stage closes the whole
      * appliaction closes too.

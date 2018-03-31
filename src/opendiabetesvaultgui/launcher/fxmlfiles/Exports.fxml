@@ -20,7 +20,7 @@
                <content>
                   <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="498.0" prefWidth="406.0">
                      <content>
-                        <VBox fx:id="exportDisplay" prefHeight="106.0" prefWidth="318.0" />
+                        <VBox fx:id="exportDisplay" focusTraversable="true" prefHeight="106.0" prefWidth="318.0" />
                      </content>
                   </ScrollPane>
                </content>
@@ -47,7 +47,7 @@
             <Font size="39.0" />
          </font>
       </Label>
-      <Button fx:id="exportAllButton" disable="true" layoutX="905.0" layoutY="388.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="%export.exportButton" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="388.0" />
-      <CheckBox fx:id="exportAllCheckbox" layoutX="905.0" layoutY="346.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="200.0" text="CheckBox" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="346.0" />
+      <Button fx:id="exportAllButton" layoutX="905.0" layoutY="388.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="200.0" text="%export.exportButton" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="388.0" />
+      <CheckBox fx:id="exportAllCheckbox" layoutX="905.0" layoutY="346.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="200.0" text="%export.exportCheckBox" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="346.0" />
    </children>
 </AnchorPane>

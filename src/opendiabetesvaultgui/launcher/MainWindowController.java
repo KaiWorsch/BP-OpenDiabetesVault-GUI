@@ -7,8 +7,6 @@ package opendiabetesvaultgui.launcher;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -21,7 +19,6 @@ import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -184,16 +181,37 @@ public class MainWindowController extends FatherController
      */
     @FXML
     private Rectangle seperatorBar;
+
     /**
      * the hashmap containing the workflowbar element for every page. the key is
      * the correlated page number: 0 for patient selection 1 for import 2 for
      * slice 3 for process 4 for export
      */
-    private Map<Integer, WorkflowbarElement> navigationbarElements;
+    private Map<Integer, NavigationBarElement> navigationbarElements;
 
+/**
+     * constant to store patient selection id
+     */
+    private static final int PATIENT_SELECTION_ID = 0;
     /**
-     * integer value page to show the current page. 0 for patient selection 1
-     * for import 2 for slice 3 for process 4 for export
+     * constant to store import id
+     */
+    private static final int IMPORT_ID = 1;
+    /**
+     * constant to store slice id
+     */
+    private static final int SLICE_ID = 2;
+    /**
+     * constant to store process id
+     */
+    private static final int PROCESS_ID = 3;
+    /**
+     * constant to store export id
+     */
+    private static final int EXPORT_ID = 4;
+    /**
+     * integer value page to show the current page ID. same as the respective
+     * page ID (example: IMPORT_ID)
      */
     private static int page = 0;
     /**
@@ -238,20 +256,18 @@ public class MainWindowController extends FatherController
      *
      * @param targetPage the page to switch to, as an integer value 0 for
      * patient selection 1 for import 2 for slice 3 for process 4 for export
-     * @throws MalformedURLException if a string path coulnt be parsed
-     * @throws IOException if a fxml file wasnt found
-     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException if a fxml file or ResourceBundle wasnt found.
      */
     public final void switchPane(final int targetPage)
-            throws MalformedURLException, IOException, URISyntaxException {
-        resizeNavigationbar();
+            throws IOException {
+        resizeNavigationBar();
         /**
          * switching is only possible: between patientSelection and import (back
          * and forth) from/to every page after the import was completed This
          * resets, when a new patient is selected
          */
         if (((targetPage == 0 && page == 1) || (targetPage == 1 && page == 0)
-                || imported) || (targetPage != page)) {
+                || imported) && (targetPage != page)) {
 
             if (page == 0 && !selected && targetPage == 1 && !imported) {
                 Alert alert = new Alert(AlertType.WARNING);
@@ -271,7 +287,7 @@ public class MainWindowController extends FatherController
                  * stage.getIcons(). add(new
                  * Image(this.getClass().getResource(ICON).toString()));
                  */
-                stage.getIcons().add(new Image(createURL(ICON).toString()));
+                stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
                 alert.showAndWait();
 
             } else {
@@ -302,96 +318,88 @@ public class MainWindowController extends FatherController
     }
 
     /**
-     * Method to call page switching to Patient selection page.
-     *
+     * Switches the current page to the patientselection page.
      *
      * @param e Event: mouse click on patientNavigation/patientLabel
-     * @throws java.io.IOException if the fxml file on position 1 in the
-     * workflow wasnt found
-     * @throws java.net.MalformedURLException
-     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException if the PatientSelection.fxml or the
+     * ResourceBundle wasnt found
      */
     @FXML
-    public final void clickPatientSelection(final MouseEvent e)
-            throws IOException, MalformedURLException, URISyntaxException {
+
+    private void clickPatientSelection(final MouseEvent e)
+            throws IOException {
         if (e.getButton() == MouseButton.PRIMARY) {
-            switchPane(0);
+            switchPane(PATIENT_SELECTION_ID);
         }
     }
 
     /**
-     * method to call page switching to import page.
+     * Switches the current page to the import page.
      *
      * @param e Event: mouse click on importNavigation/importLabel
-     * @throws Exception if the fxml file on position 2 in the workflow wasnt
+     * @throws java.io.IOException if the Imports.fxml or the ResourceBundle
+     * wasnt found
+     *
+     */
+    @FXML
+    private void clickImport(final MouseEvent e) throws IOException {
+        if (e.getButton() == MouseButton.PRIMARY) {
+            switchPane(IMPORT_ID);
+        }
+    }
+
+    /**
+     * Switches the current page to the slice page.
+     *
+     * @param e Event: mouse click on processNavigation/processLabel
+     * @throws java.io.IOException if the Slice.fxml or the ResourceBundle wasnt
      * found
      */
     @FXML
-    public final void clickImport(final MouseEvent e) throws Exception {
+    private void clickSlice(final MouseEvent e) throws IOException {
         if (e.getButton() == MouseButton.PRIMARY) {
-            switchPane(1);
+            switchPane(SLICE_ID);
         }
     }
 
     /**
-     * method to call page switching to slice page.
-     *
-     * @param e Event: mouse click on sliceNavigation/sliceLabel
-     * @throws java.io.IOException Exception if the fxml file on position 3 in
-     * the workflow wasnt found
-     * @throws java.net.MalformedURLException
-     * @throws java.net.URISyntaxException
-     */
-    @FXML
-    public final void clickSlice(final MouseEvent e) throws IOException, MalformedURLException, URISyntaxException {
-        if (e.getButton() == MouseButton.PRIMARY) {
-            switchPane(2);
-        }
-    }
-
-    /**
-     * method to call page switching to process page.
+     * Switches the current page to the process page.
      *
      * @param e Event: mouse click on processNavigation/processLabel
-     * @throws java.io.IOException Exception if the fxml file on position 4 in
-     * the workflow wasnt found
-     * @throws java.net.MalformedURLException
-     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException if the Process.fxml or the ResourceBundle
+     * wasnt found
      */
     @FXML
-    public final void clickProcess(final MouseEvent e) throws IOException, MalformedURLException, URISyntaxException {
+    private void clickProcess(final MouseEvent e) throws IOException {
         if (e.getButton() == MouseButton.PRIMARY) {
-            switchPane(3);
+            switchPane(PROCESS_ID);
         }
     }
 
     /**
-     * method to call page switching to export page.
+     * Switches the current page to the export page.
      *
      * @param e Event: mouse click on exportNavigation/exportLabel
-     * @throws java.io.IOException if the fxml file on position 5 in the
-     * workflow wasnt found
-     * @throws java.net.MalformedURLException
-     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException if Exports.fxml or the ResourceBundle wasnt
+     * found
+     *
      */
     @FXML
-    public final void clickExport(final MouseEvent e) throws IOException, MalformedURLException, URISyntaxException {
+    public final void clickExport(final MouseEvent e) throws IOException {
         if (e.getButton() == MouseButton.PRIMARY) {
-            switchPane(4);
+            switchPane(EXPORT_ID);
         }
     }
 
     /**
      * Not used right now. resets the pages back to the Patient selection page.
      *
-     * @param action the action to trigger it
-     * @throws MalformedURLException if the path to fxml couldnt be parsed
+     * @param action call method when triggered
      * @throws IOException Exception if patientSelection.fxml is not found
-     * @throws java.net.URISyntaxException
      */
     @FXML
     public final void reset(final ActionEvent action)
-            throws MalformedURLException, IOException, URISyntaxException {
+            throws IOException {
 
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("OpenDiabetesVault");
@@ -407,7 +415,7 @@ public class MainWindowController extends FatherController
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         //stage.getIcons().add(new Image(this.getClass()
         //.getResource(ICON).toString()));
-        stage.getIcons().add(new Image(createURL(ICON).toString()));
+        stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
 
         Optional<ButtonType> result = alert.showAndWait();
 
@@ -415,7 +423,7 @@ public class MainWindowController extends FatherController
             changePane(navigationbarElements.get(0).getPagePath(), functionPane,
                     usedResource);
             for (int i = 0; i < navigationbarElements.size(); i++) {
-                WorkflowbarElement element = navigationbarElements.get(i);
+                NavigationBarElement element = navigationbarElements.get(i);
                 setLabelColor("unseen", element.getLabelElement());
                 setSVGPathColor("current", element.getNavigationElement());
                 element.getCheckElement().setVisible(false);
@@ -428,33 +436,26 @@ public class MainWindowController extends FatherController
      * Opens the about page as a popup.
      *
      * @param action ActionEvent: when triggerd calls the method
-     * @throws MalformedURLException if the path to fxml couldnt be parsed
      * @throws IOException Exception if AboutPage.fxml isnt found
-     * @throws java.net.URISyntaxException if path couldn't be parsed as a URI
      */
     @FXML
     public final void openAboutPage(final ActionEvent action)
-            throws MalformedURLException,
-            IOException,
-            URISyntaxException {
-        FXMLLoader loader;
-        Class fc = getFatherControllerClass();
-        URL url = fc.getResource(ABOUT_PAGE).toURI().toURL();
-        openPageAndCloseSameWindows(url,
-        usedResource.getString("about.title"), false, usedResource);
+            throws
+            IOException {
+
+        openPageSingleInstance(ABOUT_PAGE,
+                usedResource.getString("about.title"), false, usedResource);
     }
 
     /**
      * Opens the option page as a popup.
      *
      * @param action ActionEvent : when triggered calls the method
-     * @throws MalformedURLException if the path to fxml couldnt be parsed
      * @throws IOException Exception if OptionsWindow.fxml isnt found
-     * @throws java.net.URISyntaxException if path couldn't be parsed as a URI
      */
     @FXML
     public final void openOptionWindow(final ActionEvent action)
-            throws MalformedURLException, IOException, URISyntaxException {
+            throws IOException {
         String oldLanguage = PREFS_FOR_ALL.get(LANGUAGE_DISPLAY, "");
         String oldDateFormat = PREFS_FOR_ALL.get("dateFormat", "");
 
@@ -463,16 +464,17 @@ public class MainWindowController extends FatherController
 
         getWindowStage().setOnHiding((WindowEvent e) -> {
             if (!oldLanguage.equals(PREFS_FOR_ALL.get(LANGUAGE_DISPLAY, "")) || !oldDateFormat.equals(PREFS_FOR_ALL.get("dateFormat", ""))) {
-                
-                FXMLLoader loader;
+
                 try {
+
+                    FXMLLoader loader;
+
                     try {
                         DBConnection.closeConnection();
                     } catch (SQLException ex) {
                         Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    Class fc = getFatherControllerClass();
-                    URL url = fc.getResource(MAIN_PAGE).toURI().toURL();
+                    URL url = getClass().getResource(MAIN_PAGE);
                     loader = new FXMLLoader(url,
                             ResourceBundle.getBundle(RESOURCE_PATH,
                                     new Locale(PREFS_FOR_ALL.
@@ -488,18 +490,10 @@ public class MainWindowController extends FatherController
                     AnchorPane.setLeftAnchor(pane, 0.0);
                     AnchorPane.setRightAnchor(pane, 0.0);
                     AnchorPane.setTopAnchor(pane, 0.0);
-                    getMainWindowController().resizeNavigationbar();
-                    
-                } catch (MalformedURLException ex) {
-                    Logger.getLogger(MainWindowController.class.getName()).
-                            log(Level.SEVERE, null, ex);
+                    getMainWindowController().resizeNavigationBar();
                 } catch (IOException ex) {
-                    Logger.getLogger(MainWindowController.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                } catch (URISyntaxException ex) {
                     Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
             }
         });
 
@@ -509,17 +503,12 @@ public class MainWindowController extends FatherController
      * Opens the help page as a popup.
      *
      * @param event Action event : when triggered starts the routine
-     * @throws MalformedURLException if the path to fxml couldnt be parsed
      * @throws IOException Exception if help.fxml is not found
-     * @throws java.net.URISyntaxException if path couldn't be parsed as a URI
      */
     public final void openHelpPage(final Event event)
-            throws MalformedURLException, IOException, URISyntaxException {
-        FXMLLoader loader;
-        Class fc = getFatherControllerClass();
-        URL url = fc.getResource(MAIN_HELP_PAGE).toURI().toURL();
-        openPageAndCloseSameWindows(url,
-        usedResource.getString("help.title"), true, usedResource);
+            throws IOException {
+        openPageSingleInstance(MAIN_HELP_PAGE,
+                usedResource.getString("help.title"), true, usedResource);
     }
 
     /**
@@ -579,12 +568,7 @@ public class MainWindowController extends FatherController
         // Shortcut for DefaultSize
         this.defaultSize.setAccelerator(new KeyCodeCombination(KeyCode.F12));
 
-        try {
-            initializeNavigationbarElements();
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(MainWindowController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
+        initializeNavigationbarElements();
 
         if (PREFS_FOR_ALL.get("pathDatabase", "").equals("")) {
             PREFS_FOR_ALL.put("pathDatabase",
@@ -599,19 +583,15 @@ public class MainWindowController extends FatherController
                 "/opendiabetesvaultgui/stylesheets/fonts/Roboto-Regular.ttf").
                 toExternalForm(), 10);
 
+        stageSizeChangeListener();
+        setSVGPathColor("current", patientNavigation);
         try {
-            stageSizeChangeListener();
-            setSVGPathColor("current", patientNavigation);
             changePane(PATIENT_SELECTION_PAGE, functionPane,
                     usedResource);
-
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(MainWindowController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        } catch (IOException | URISyntaxException ex) {
-            Logger.getLogger(MainWindowController.class.getName()).
-                    log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     /**
@@ -679,65 +659,96 @@ public class MainWindowController extends FatherController
     /**
      * resizes the navigation bar in order to the window size.
      */
-    private void resizeNavigationbar() {
+    private void resizeNavigationBar() {
         double windowWidth = FatherController.getPrimaryStage().getWidth();
         double originalWidth = importNavigation.getLayoutBounds().getWidth();
-        double requiredWidth = windowWidth * 0.2;
+        double requiredWidth = windowWidth * (1.0 / navigationbarElements.
+                size());
         double scale = (requiredWidth + 23) / originalWidth;
 
-        //******* relocate and scale the navigationbar ************//
-        patientNavigation.setScaleX(scale);
-        patientNavigation.relocate(requiredWidth / 2, navigationBarHeight);
+        //******* relocate and scale the start page elements ************//
+        //naviagtion element
+        navigationbarElements.get(0).getNavigationElement().setScaleX(scale);
+        navigationbarElements.get(0).getNavigationElement().
+                relocate(requiredWidth / 2, navigationBarHeight);
+        //label
+        navigationbarElements.get(0).getLabelElement().
+                setLayoutX(navigationbarElements.get(0).getNavigationElement().
+                        getLayoutX());
+        //check element
+        navigationbarElements.get(0).getCheckElement().
+                relocate(navigationbarElements.get(0).getLabelElement().
+                        getLayoutX() + navigationbarElements.
+                                get(0).getLabelElement().getWidth()
+                        + checksPaddingX, navigationbarElements.get(0).
+                                getLabelElement().getLayoutY()
+                        + checksPaddingY);
 
-        importNavigation.setScaleX(scale);
+        //******* relocate and scale all other elements ************//
+        for (int i = 1; i < navigationbarElements.size(); i++) {
+            NavigationBarElement element = navigationbarElements.get(i);
+            //Navigation elements
+            element.getNavigationElement().setScaleX(scale);
+            element.getNavigationElement().
+                    relocate(navigationbarElements.get(i - 1).
+                            getNavigationElement().getLayoutX() + requiredWidth,
+                            navigationBarHeight);
+            //labels
+            element.getLabelElement().setLayoutX(element.getNavigationElement()
+                    .getLayoutX() + svgPathPaddingX);
+            //check element
+            element.getCheckElement().relocate(element.getLabelElement().
+                    getLayoutX() + element.getLabelElement().getWidth()
+                    + checksPaddingX, element.getLabelElement().getLayoutY()
+                    + checksPaddingY);
+        }
+        /* importNavigation.setScaleX(scale);
         importNavigation.relocate(patientNavigation.getLayoutX()
-                + requiredWidth, navigationBarHeight);
-
+        + requiredWidth, navigationBarHeight);
+        
         sliceNavigation.setScaleX(scale);
         sliceNavigation.relocate(importNavigation.getLayoutX()
-                + requiredWidth, navigationBarHeight);
-
+        + requiredWidth, navigationBarHeight);
+        
         processNavigation.setScaleX(scale);
         processNavigation.relocate(sliceNavigation.getLayoutX()
-                + requiredWidth, navigationBarHeight);
-
+        + requiredWidth, navigationBarHeight);
+        
         exportNavigation.setScaleX(scale);
         exportNavigation.relocate(processNavigation.getLayoutX()
-                + requiredWidth, navigationBarHeight);
+        + requiredWidth, navigationBarHeight);*/
 
         //********* relocate the labels from the navigationbar ********//
-        exportLabel.setLayoutX(exportNavigation.getLayoutX() + svgPathPaddingX);
+        /* exportLabel.setLayoutX(exportNavigation.getLayoutX() + svgPathPaddingX);
         processLabel.
-                setLayoutX(processNavigation.getLayoutX() + svgPathPaddingX);
+        setLayoutX(processNavigation.getLayoutX() + svgPathPaddingX);
         importLabel.setLayoutX(importNavigation.getLayoutX() + svgPathPaddingX);
         // doesnt need padding is long enough
         patientLabel.setLayoutX(patientNavigation.getLayoutX());
-        sliceLabel.setLayoutX(sliceNavigation.getLayoutX() + svgPathPaddingX);
-
+        sliceLabel.setLayoutX(sliceNavigation.getLayoutX() + svgPathPaddingX);*/
         // relocate checks from navigationbar
-        patientCheck.relocate(patientLabel.getLayoutX()
-                + patientLabel.getWidth()
-                + checksPaddingX, patientLabel.getLayoutY()
-                + checksPaddingY);
+        /*patientCheck.relocate(patientLabel.getLayoutX()
+        + patientLabel.getWidth()
+        + checksPaddingX, patientLabel.getLayoutY()
+        + checksPaddingY);
         importCheck.relocate(importLabel.getLayoutX()
-                + importLabel.getWidth()
-                + checksPaddingX, importLabel.getLayoutY()
-                + checksPaddingY);
+        + importLabel.getWidth()
+        + checksPaddingX, importLabel.getLayoutY()
+        + checksPaddingY);
         processCheck.relocate(processLabel.getLayoutX()
-                + processLabel.getWidth()
-                + checksPaddingX, processLabel.getLayoutY()
-                + checksPaddingY);
+        + processLabel.getWidth()
+        + checksPaddingX, processLabel.getLayoutY()
+        + checksPaddingY);
         sliceCheck.relocate(sliceLabel.getLayoutX()
-                + sliceLabel.getWidth()
-                + checksPaddingX, sliceLabel.getLayoutY() + checksPaddingY);
-
+        + sliceLabel.getWidth()
+        + checksPaddingX, sliceLabel.getLayoutY() + checksPaddingY);*/
         seperatorBar.setWidth(windowWidth);
     }
 
     /**
      * listens to size changes on the main stage.
      *
-     * calls resizeNavigationbar if the width is changed
+     * calls resizeNavigationBar if the width is changed
      *
      * https://stackoverflow.com/questions/47044623/stage-resize-event-javafx
      */
@@ -745,7 +756,7 @@ public class MainWindowController extends FatherController
         getPrimaryStage().widthProperty().
                 addListener((ObservableValue<? extends Number> observable,
                         Number oldValue, Number newValue) -> {
-                    resizeNavigationbar();
+                    resizeNavigationBar();
                 });
     }
 
@@ -753,20 +764,18 @@ public class MainWindowController extends FatherController
      * Initializes Hashmap which indicates the order and the different elements
      * of each workflow pane.
      *
-     * @throws MalformedURLException if the path to fxml couldnt be parsed
      */
-    private void initializeNavigationbarElements()
-            throws MalformedURLException {
+    private void initializeNavigationbarElements() {
         navigationbarElements = new HashMap<>();
-        navigationbarElements.put(0, new WorkflowbarElement(patientNavigation,
+        navigationbarElements.put(PATIENT_SELECTION_ID, new NavigationBarElement(patientNavigation,
                 patientCheck, patientLabel, PATIENT_SELECTION_PAGE));
-        navigationbarElements.put(1, new WorkflowbarElement(importNavigation,
+        navigationbarElements.put(IMPORT_ID, new NavigationBarElement(importNavigation,
                 importCheck, importLabel, IMPORT_PAGE));
-        navigationbarElements.put(2, new WorkflowbarElement(sliceNavigation,
+        navigationbarElements.put(SLICE_ID, new NavigationBarElement(sliceNavigation,
                 sliceCheck, sliceLabel, SLICE_PAGE));
-        navigationbarElements.put(3, new WorkflowbarElement(processNavigation,
+        navigationbarElements.put(PROCESS_ID, new NavigationBarElement(processNavigation,
                 processCheck, processLabel, PROCESS_PAGE));
-        navigationbarElements.put(4, new WorkflowbarElement(exportNavigation,
+        navigationbarElements.put(EXPORT_ID, new NavigationBarElement(exportNavigation,
                 exportCheck, exportLabel, EXPORT_PAGE));
     }
 
@@ -830,5 +839,50 @@ public class MainWindowController extends FatherController
      */
     public static String getLanguage() {
         return PREFS_FOR_ALL.get(LANGUAGE_DISPLAY, "");
+    }
+
+    /**
+     * PATIENT_SELECTION_ID getter.
+     *
+     * @return the PATIENT_SELECTION_ID value
+     */
+    public static int getPATIENT_SELECTION_ID() {
+        return PATIENT_SELECTION_ID;
+    }
+
+    /**
+     * IMPORT_ID getter.
+     *
+     * @return the PATIENT_SELECTION_ID value
+     */
+    public static int getIMPORT_ID() {
+        return IMPORT_ID;
+    }
+
+    /**
+     * SLICE_ID getter.
+     *
+     * @return the SLICE_ID value
+     */
+    public static int getSLICE_ID() {
+        return SLICE_ID;
+    }
+
+    /**
+     * PROCESS_ID getter.
+     *
+     * @return the PROCESS_ID value
+     */
+    public static int getPROCESS_ID() {
+        return PROCESS_ID;
+    }
+
+    /**
+     * EXPORT_ID getter.
+     *
+     * @return the EXPORT_ID value
+     */
+    public static int getEXPORT_ID() {
+        return EXPORT_ID;
     }
 }

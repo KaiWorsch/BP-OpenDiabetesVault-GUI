@@ -6,18 +6,14 @@
 package opendiabetesvaultgui.login;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 
 import opendiabetesvaultgui.launcher.FatherController;
 import java.util.prefs.Preferences;
@@ -75,17 +71,17 @@ public class InputPasswordController extends FatherController implements Initial
     private final Color backgroundColor = Color.web("E0E0E0");
 
     /**
-     * This method saves the users password as hash in the java preferences. //
-     * TODO more secure option
+     * Saves the users password as hash as a preference.
      *
-     * @param action when triggered call method
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.io.UnsupportedEncodingException
-     * @throws java.net.MalformedURLException
-     * @throws java.util.prefs.BackingStoreException
+     *
+     * @param action call method when triggered
+     * @throws java.security.NoSuchAlgorithmException if the requestes
+     * alogorithm isnt available
+     * @throws java.io.IOException if the fxml file or the ResourceBundle wasnt
+     * found
      */
     @FXML
-    private void savePassword(ActionEvent action) throws NoSuchAlgorithmException, UnsupportedEncodingException, MalformedURLException, IOException, BackingStoreException, URISyntaxException {
+    public void savePassword(ActionEvent action) throws IOException, NoSuchAlgorithmException {
 
         // password cant be empty
         if (!("".equals(passwordCheck.getText()) || "".equals(firstEntry.getText()))) {
@@ -142,7 +138,7 @@ public class InputPasswordController extends FatherController implements Initial
                 secondPasswordRectangle.setFill(wrongColor);
                 secondPasswordRectangle.setStroke(wrongColor);
 
-               // secondPasswordLabel.setText(myResource.getString("inputpw.enterPasswordAgainText"));
+                // secondPasswordLabel.setText(myResource.getString("inputpw.enterPasswordAgainText"));
                 secondPasswordLabel.setTextFill(wrongColor);
                 //login.setStyle("-fx-focus-color: #FFFFFF;");
                 //login.setStyle("-fx-background-color: #007399");
@@ -153,16 +149,12 @@ public class InputPasswordController extends FatherController implements Initial
     }
 
     /**
-     * This method fires the savePasswordButton when ENTER is pressed and is
-     * assigned to // TODO.
+     * This method fires the savePasswordButton when ENTER is pressed.
      *
-     *
-     * @param e when triggered calls method
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.io.UnsupportedEncodingException
-     * @throws java.net.MalformedURLException
+     * @param e calls method when triggered
      */
-    public void passwordLoginKey(KeyEvent e) throws NoSuchAlgorithmException, UnsupportedEncodingException, MalformedURLException, IOException {
+    @FXML
+    private void savePasswordKey(KeyEvent e) {
         // if enter pressed 
         if (e.getCode() == KeyCode.ENTER) {
             savePasswordButton.fire();
@@ -218,35 +210,25 @@ public class InputPasswordController extends FatherController implements Initial
     }
 
     /**
-     * This method changes the used language. If a new language is selected, the
-     * value assigned to LANGUAGE_DISPLAY and LANGUAGE_NAME will be updated. The
-     * fxml file will be loaded again with a new locale saved in
-     * LANGUAGE_DISPLAY.
+     * Changes the language of the GUI. If a new language is selected, the value
+     * assigned to LANGUAGE_DISPLAY and LANGUAGE_NAME will be updated. The fxml
+     * file will be loaded again with a new locale saved in LANGUAGE_DISPLAY.
      */
     private void languageListener() {
         // if selected language changes
         selectLanguage.valueProperty().addListener((ObservableValue observableValue, Object oldValue, Object newValue) -> {
+            // saves the new language as ISO-639 language code
+            PREFS_FOR_ALL.put(LANGUAGE_DISPLAY, ALL_LANGUAGES.getOrDefault(newValue, ""));
+            // saves the language name
+            PREFS_FOR_ALL.put(LANGUAGE_NAME, (String) newValue);
+            // clears the content
+            fatherPane.getChildren().clear();
+            // and load it again with new locale
+            FXMLLoader loader;
+            loader = new FXMLLoader(InputPasswordController.this.getClass().getResource(PASSWORD_INPUT_PAGE), ResourceBundle.getBundle(RESOURCE_PATH, new Locale(PREFS_FOR_ALL.get(LANGUAGE_DISPLAY, ""))));
             try {
-
-                // saves the new language as ISO-639 language code
-                PREFS_FOR_ALL.put(LANGUAGE_DISPLAY, ALL_LANGUAGES.getOrDefault(newValue, ""));
-                // saves the language name
-                PREFS_FOR_ALL.put(LANGUAGE_NAME, (String) newValue);
-
-                // clears the content
-                fatherPane.getChildren().clear();
-                // and load it again with new locale
-                                    Class fc = FatherController.getFatherControllerClass();
-
-                FXMLLoader loader = new FXMLLoader(fc.getResource(PASSWORD_INPUT_PAGE).toURI().toURL(), ResourceBundle.getBundle(RESOURCE_PATH, new Locale(PREFS_FOR_ALL.get(LANGUAGE_DISPLAY, ""))));
-
                 fatherPane.getChildren().add(loader.load());
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(InputPasswordController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(InputPasswordController.class.getName()).log(Level.SEVERE, null, ex);
-
-            } catch (URISyntaxException ex) {
                 Logger.getLogger(InputPasswordController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });

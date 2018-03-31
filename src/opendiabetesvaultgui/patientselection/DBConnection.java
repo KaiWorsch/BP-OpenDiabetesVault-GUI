@@ -21,72 +21,94 @@ import static opendiabetesvaultgui.launcher.FatherController.PREFS_FOR_ALL;
  */
 public class DBConnection {
 
-    //private static String DATABASE_URL = "jdbc:hsqldb:mem:vaultdb";
-    //private static String DATABASE_URL = "jdbc:hsqldb:file:/Users/danielschafer/Desktop/testdb/testdb.db";
-    //private static String DATABASE_URL = "jdbc:hsqldb:file:"+File.separator+"src"+File.separator+"opendiabetesvaultgui"+File.separator+"database"+File.separator+"test.db";
-    //private static String DATABASE_URL = "jdbc:hsqldb:mem:vaultDB";
-    //private static String DATABASE_URL = PREFS_FOR_ALL.get("pathDatabase", "");
-    //private static String DATABASE_URL = "jdbc:hsqldb:file:"+pathString();
-    private final static String DATABASE_URL = DatabaseType();
-    private final static String user = "root";
-    private final static String password = "root";
+    private final static String DATABASE_URL = databaseType();
+    private final static String USER = "root";
+    private final static String PASSWORD = "root";
     private static Connection conn;
 
-    public static Connection connect() throws SQLException, IOException {
+    /**
+     * This method is responsible for establishing a new Connection to
+     * the database.
+     * It is also responsible for creating a new
+     * folder structure at the given database path
+     *
+     * @return the currently active Connection
+     * @throws java.sql.SQLException if sql statements invalid.
+     * @throws java.io.IOException if failed or interrupted I/O operations.
+     * @throws java.lang.ClassNotFoundException if class was not found.
+     *
+     */
+    public static Connection connect() throws SQLException, IOException, ClassNotFoundException {
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver").newInstance();
             File yourFile = new File(PREFS_FOR_ALL.get("pathDatabase", "")
                     + File.separator + "vault.db");
             yourFile.createNewFile(); // if file already exists will do nothing
             FileOutputStream oFile = new FileOutputStream(yourFile, false);
-        } catch (ClassNotFoundException ncfe) {
-            //Driver not found
-            System.err.println("Error: " + ncfe.getMessage());
-        } catch (InstantiationException ie) {
+        } //Driver not found
+        catch (InstantiationException ie) {
             //Wrong Type
             System.err.println("Error: " + ie.getMessage());
         } catch (IllegalAccessException ae) {
             //Wrong Access Credentials
             System.err.println("Error: " + ae.getMessage());
         }
-        System.out.println(pathString());
-        System.out.println("DATABASE CONNECTED");
-        conn = DriverManager.getConnection(DATABASE_URL, user, password);
+        conn = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
         return conn;
     }
-    
-    public static String DatabaseType(){
+
+    /**
+     * Depending on which database type was chosen, this method returns the
+     * current database path as a String. To build the path to the embedded
+     * database, it calls #pathString().
+     *
+     * @return String containing the path to the current database
+     */
+    public static String databaseType() {
         if (PREFS_FOR_ALL.getBoolean("databaseInMemory", false)) {
             return "jdbc:hsqldb:mem:vaultDB";
-        }
-
-        else {
+        } else {
             return "jdbc:hsqldb:file:" + pathString();
         }
     }
 
+    /**
+     * Returns the current Connection, if it is still active and valid It
+     * otherwise establishes a new Connection by calling {@link #connect()}
+     *
+     * @return Connection conn
+     * @throws SQLException if sql statements invalid.
+     * @throws IOException if failed or interrupted I/O operations.
+     * @throws java.lang.ClassNotFoundException if class was not found.
+     */
     public static Connection getConnection()
-            throws SQLException, ClassNotFoundException, IOException {
+            throws SQLException, IOException, ClassNotFoundException {
         if (conn != null && !conn.isClosed()) {
             return conn;
         }
-
         connect();
         return conn;
 
     }
 
-    public static void closeConnection() throws SQLException{
+    /**
+     * Safely closes the currently active database connection
+     *
+     * @throws SQLException if sql statements invalid.
+     */
+    public static void closeConnection() throws SQLException {
         Statement st = conn.createStatement();
-
-        // db writes out to files and performs clean shuts down
-        // otherwise there will be an unclean shutdown
-        // when program ends
         System.out.println("CONNECTION CLOSED");
         st.execute("SHUTDOWN");
         conn.close();
     }
 
+    /**
+     * This method builds a full path to the embedded database by appending all
+     * components necessary
+     *
+     * @return String containing a fully built database path
+     */
     private static String pathString() {
         StringBuilder test = new StringBuilder();
         test.append(PREFS_FOR_ALL.get("pathDatabase", ""));

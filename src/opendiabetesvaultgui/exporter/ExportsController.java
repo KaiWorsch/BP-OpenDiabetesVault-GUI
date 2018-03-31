@@ -7,11 +7,12 @@ package opendiabetesvaultgui.exporter;
 
 import de.opendiabetes.vault.plugin.exporter.Exporter;
 import de.opendiabetes.vault.plugin.management.OpenDiabetesPluginManager;
+import de.opendiabetes.vault.plugin.util.HelpLanguage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,16 +25,19 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,21 +51,32 @@ import opendiabetesvaultgui.importer.ImportsController;
 import javax.swing.filechooser.FileSystemView;
 import opendiabetesvaultgui.importer.PluginHelpController;
 import opendiabetesvaultgui.launcher.FatherController;
-import static opendiabetesvaultgui.launcher.FatherController.IMPORT_PLUGIN_CONTROL_PAGE;
-import static opendiabetesvaultgui.launcher.FatherController.IMPORT_PLUGIN_HELP_PAGE;
+import static opendiabetesvaultgui.launcher.FatherController.PLUGIN_CONTROL_PAGE;
+import static opendiabetesvaultgui.launcher.FatherController.PLUGIN_HELP_PAGE;
 
 /**
  * FXML Controller class
  *
- * @author Kai
+ * @author Daniel Schäfer, Julian Schwind, Martin Steil, Kai Worsch
  */
 public class ExportsController extends FatherController implements Initializable {
 
+    /**
+     * Display the export plugins as TitledPane.
+     */
     @FXML
     private VBox exportDisplay;
     private OpenDiabetesPluginManager pluginManager;
 
-    private ResourceBundle usedResource;
+    @FXML
+    private DatePicker startDate;
+    @FXML
+    private DatePicker endDate;
+
+    /**
+     * The passed ResourceBundle.
+     */
+    private ResourceBundle myResource;
 
     private final Preferences prefs = Preferences.userNodeForPackage(ImportsController.class);
     double importBoxPositionY = 10;
@@ -70,116 +85,48 @@ public class ExportsController extends FatherController implements Initializable
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        usedResource = resources;
-
+        myResource = resources;
+        endDate.setValue(LocalDate.now());
+        startDate.setValue(endDate.getValue().withDayOfYear(LocalDate.now().
+                getDayOfYear() - 31));
         exportDisplay.setTranslateX(0);
         exportDisplay.setTranslateY(0);
 
         pluginManager = OpenDiabetesPluginManager.getInstance();
 
-        List<String> importPlugins = pluginManager.
+        List<String> exportPlugins = pluginManager.
                 getPluginIDsOfType(Exporter.class);
 
-        for (int i = 0; i < importPlugins.size(); i++) {
+        for (int i = 0; i < exportPlugins.size(); i++) {
             Exporter plugin = pluginManager.
-                    getPluginFromString(Exporter.class, importPlugins.
+                    getPluginFromString(Exporter.class, exportPlugins.
                             get(i));
-            exportDisplay.getChildren().add(createExporter(importPlugins.
-                    get(i), plugin));
-        }
-
-        /* ((TitledPane) (exportGroup.getChildren().get(0))).setExpanded(true);
-        ((TitledPane) (exportGroup.getChildren().get(1))).setExpanded(true);
-        ((TitledPane) (groupTwo.getChildren().get(0))).setExpanded(true); */
-        // greatFatherPane.widthProperty().add(ObersvableValue)
-        /*importAllCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
-                -> {
-            System.out.print("beinah");
-            if (oldValue == false && newValue == true) {
-                importAllButton.setDisable(false);
-            } else {
-                importAllButton.setDisable(true);
+            try {
+                exportDisplay.getChildren().add(createExporter(exportPlugins.
+                        get(i), plugin));
+            } catch (Exception ex) {
+                Logger.getLogger(ExportsController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        });*/
- /*  group_two.getChildren().setAll(
-                createTitledPane("Export Plugin", true),
-                createTitledPane("irgendein Plugin", true)
-
-
-        ); 
-        
-        group_one.getChildren().setAll(
-                createTitledPane("TestPlugin", true),
-                createTitledPane("Plugger", true),
-                createTitledPane("Egal eigentlich", false)
-        );
-       ((TitledPane) (group_one.getChildren().get(0))).setExpanded(true);
-       ((TitledPane) (group_two.getChildren().get(0))).setExpanded(true);
-
-        Scene testScene = getPrimaryStage().getScene();
-        
-        one.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        two.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        // one.widthProperty().
-      
-   // To change body of generated methods, choose Tools | Templates.
-   // throw new UnsupportedOperationException("Not supported yet.");
-    }
-   
-     public TitledPane createTitledPane(String name, Boolean need_path) {
-
-        AnchorPane content = new AnchorPane();
- // -------------------- IMPORT BUTTON -----------------------------------//
-        Button import_button = new Button("Import");
-
-        import_button.setLayoutX(50);
-        import_button.setLayoutY(80);
-        import_button.setPrefWidth(100);
- // -------------------- PROGRESSBAR -----------------------------------//
-
-        ProgressBar progress = new ProgressBar();
-
-        progress.setLayoutX(180);
-        progress.setLayoutY(85);
-        progress.setPrefWidth(150);
-        progress.setPrefHeight(20);
-       
-// list for all added elements
-        List<Node> list = new ArrayList<>(
-                Arrays.asList(import_button, progress));
-// if the plugin needs a path
-        if (need_path) {
-            Button browse_import = new Button("Browse");
-            TextField field = new TextField();
-
-      /*      browse_import.setOnAction((ActionEvent action) -> {
-                choose_files_and_get_paths(action, field);
-            }); 
-            browse_import.setLayoutX(260);
-            browse_import.setLayoutY(20);
-            field.setLayoutX(30);
-            field.setLayoutY(20);
-            field.setPrefWidth(180);
-            browse_import.setPrefWidth(120);
-
-            list.add(field);
-            list.add(browse_import);
         }
-   // add all elements to the pane
-        content.getChildren().addAll(list);
-        TitledPane pane = new TitledPane(name, content);
-        pane.setExpanded(false);
-
-        return pane; */
     }
 
-    public TitledPane createExporter(String name, Exporter plugin) {
+    /**
+     * Creates a Exporte plugin as TitledPane. All necessary elements for the
+     * plugin will be created, designed and positioned. Methods will be assigned
+     * to specific elements.
+     *
+     * @param name the name of the plugin
+     * @param plugin the passed plugin
+     * @return the TitledPane
+     * @throws Exception if the export couldnt be started or finished
+     */
+    private TitledPane createExporter(String name, Exporter plugin) throws Exception {
 
         AnchorPane content = new AnchorPane();
+        Path helpPath = pluginManager.getHelpFilePath(plugin, HelpLanguage.LANG_EN);
 
         //Path helpPath = pluginManager.getHelpFilePath(plugin);
-
-        Button exportButton = new Button(usedResource.getString("export.exportButton"));
+        Button exportButton = new Button(myResource.getString("export.exportButton"));
         exportButton.setPrefWidth(100);
 
         exportButton.setOnAction(e -> {
@@ -200,29 +147,26 @@ public class ExportsController extends FatherController implements Initializable
         hitBoxGear.setOnMouseClicked(event -> {
 
             try {
-                openPluginControll(name + " " + usedResource.getString("import.pluginControlTitle"));
+                openPluginControll(name + " " + myResource.getString("import.pluginControlTitle"));
             } catch (IOException ex) {
                 Logger.getLogger(ImportsController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (URISyntaxException ex) {
-                Logger.getLogger(ExportsController.class.getName()).log(Level.SEVERE, null, ex);
             }
-
         });
 
         Rectangle hitBoxHepSign = new Rectangle(16, 25);
         hitBoxHepSign.setCursor(Cursor.HAND);
         hitBoxHepSign.setOpacity(0);
-        /*hitBoxHepSign.setOnMouseClicked((MouseEvent event) -> {
+        hitBoxHepSign.setOnMouseClicked((MouseEvent event) -> {
             try {
-                openPluginHelp(helpPath.toString(), name + "  " + usedResource.getString("import.pluginHelpTitle"));
+                openPluginHelp(helpPath.toString(), name + "  " + myResource.getString("import.pluginHelpTitle"));
             } catch (IOException ex) {
                 Logger.getLogger(ImportsController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        });*/
+        });
         SVGPath helpSign = new SVGPath();
-        helpSign.setContent("M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z");
-        /*helpSign.setRotationAxis(Rotate.X_AXIS);
-        helpSign.setRotate(180);*/
+        helpSign.setContent("M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12"
+                + " 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 "
+                + "4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z");
         helpSign.setStyle("-fx-fill: #007399;");
         List<Node> list = new ArrayList<>(
                 Arrays.asList(exportButton, gear, progress,
@@ -235,7 +179,7 @@ public class ExportsController extends FatherController implements Initializable
         hitBoxHepSign.relocate(580, 10);
         helpSign.relocate(hitBoxHepSign.getLayoutX(), hitBoxHepSign.getLayoutY());
         gear.relocate(hitBoxGear.getLayoutX() - 11, hitBoxGear.getLayoutY() - 11);
-        Button browseButton = new Button(usedResource.getString("import.browseButton"));
+        Button browseButton = new Button(myResource.getString("import.browseButton"));
         TextField field = new TextField();
 
         browseButton.setOnAction((ActionEvent action) -> {
@@ -262,7 +206,7 @@ public class ExportsController extends FatherController implements Initializable
         fieldRectangle.setSmooth(true);
         fieldRectangle.setId("fieldRectangle");
 
-        Label fieldLabel = new Label(usedResource.getString("import.fieldLabel"));
+        Label fieldLabel = new Label(myResource.getString("import.fieldLabel"));
         fieldLabel.setId("fieldLabel");
 
         list.add(fieldBox);
@@ -275,15 +219,13 @@ public class ExportsController extends FatherController implements Initializable
 
         content.getChildren().addAll(list);
         BorderPane bPane = new BorderPane();
-        HBox hbox = new HBox();
         // hbox.setPadding(new Insets(15, 12, 15, 12));
-        hbox.setSpacing(10);
         CheckBox disBox = new CheckBox("");
         Label title = new Label(name);
         progress.setDisable(true);
-        hbox.getChildren().addAll(title, disBox, progress);
+
         pane.graphicTextGapProperty().bind(pane.widthProperty());
-        pane.setGraphic(hbox);
+        pane.setGraphic(createBorderPane(name, pane, progress));
         //  pane.setContentDisplay(ContentDisplay.RIGHT);
         //  pane.graphicTextGapProperty().bind(pane.widthProperty().subtract(100));
 
@@ -299,16 +241,65 @@ public class ExportsController extends FatherController implements Initializable
             disBox.selectedProperty().set(true);
         }
 
-        checkBoxListener(disBox, pane, name, hbox);
+        checkBoxListener(disBox, pane, name, bPane);
 
         pane.setAnimated(false);
 
         return pane;
     }
 
-    public void openPluginHelp(String path, String title) throws MalformedURLException, IOException {
+    /**
+     * Creates a Borderpane consisting of a Checkbox and ProgressBar. The
+     * element will be positioned using methods of the BorderPane. Calls
+     * {@link #checkBoxListener(CheckBox box, TitledPane target, String name, BorderPane bp)}
+     *
+     * @see #getFileString(Stage stage)
+     *
+     * @param name the title of a TitledPane
+     * @param pane the respective a TitledPane
+     * @param progress a Progressbar
+     * @return the BorderPane
+     */
+    private BorderPane createBorderPane(String name, TitledPane pane, ProgressBar progress) {
+        BorderPane bPane = new BorderPane();
+        CheckBox cBox = new CheckBox("");
+        if (prefs.getBoolean(name, false)) {
+            pane.setCollapsible(true);
+            pane.setCollapsible(false);
+            pane.setExpanded(false);
+        } else {
+            cBox.selectedProperty().set(true);
+        }
+        Label title = new Label(name);
+        progress.setProgress(0);
+        progress.setPrefWidth(300);
+        progress.setPrefHeight(20);
+        bPane.setPadding(new Insets(5, 10, 5, 10));
+        bPane.autosize();
+        bPane.setLeft(cBox);
+        BorderPane centerPane = new BorderPane();
+        centerPane.setPadding(new Insets(0, 0, 0, 10));
+        centerPane.setLeft(title);
+        bPane.setCenter(centerPane);
+        bPane.setRight(progress);
+        bPane.prefWidthProperty().bind(pane.widthProperty().subtract(200));
+        checkBoxListener(cBox, pane, name, bPane);
+        return bPane;
+    }
 
-        FXMLLoader loader = new FXMLLoader(createURL(IMPORT_PLUGIN_HELP_PAGE), usedResource);
+    /**
+     * Opens page, which displays a help page.
+     *
+     * @param path path to the help page.
+     * @param title title of the window.
+     * @throws java.net.MalformedURLException if the path couldnt be parsed as
+     * URL
+     *
+     * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
+     */
+    private void openPluginHelp(String path, String title) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(PLUGIN_HELP_PAGE), myResource);
         Parent root = loader.load();
 
         PluginHelpController pluginHelpController = loader.getController();
@@ -319,10 +310,18 @@ public class ExportsController extends FatherController implements Initializable
         pluginHelpController.loadHelpPage(path);
         stage.show();
 
-        //pluginHelpController.loadHelpPage(path);
     }
 
-    private void checkBoxListener(CheckBox box, TitledPane target, String name, HBox hbox) {
+    /**
+     * Adds listener to CheckBoxe's selectedProperty(). CheckBox state
+     * determines, if the TitledPane is collapsible.
+     *
+     * @param box the CheckBox from the TitledPane
+     * @param target the TitledPane
+     * @param name title of the TitledPane
+     * @param bp the BorderPane inside of the TitledPane
+     */
+    private void checkBoxListener(CheckBox box, TitledPane target, String name, BorderPane bp) {
         box.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
                 -> {
             target.setExpanded(newValue);
@@ -332,28 +331,35 @@ public class ExportsController extends FatherController implements Initializable
     }
 
     /**
-     * opens the control page as a popup.
+     * Opens the control page as a popup.
      *
-     * @author Kai, Julian
-     * @param name
-     * @throws java.net.MalformedURLException
-     * @throws java.net.URISyntaxException
+     * @param name title of the window
+     * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
      */
-    public void openPluginControll(String name) throws MalformedURLException, IOException, URISyntaxException {
-        openPage(IMPORT_PLUGIN_CONTROL_PAGE, name, false, usedResource);
+    private void openPluginControll(String name) throws IOException {
+        openPage(PLUGIN_CONTROL_PAGE, name, false, myResource);
     }
 
     /**
-     * opens the help page as a popup
+     * Calls #openPluginHelp(String path, String title)
      *
-     * @author Kai, Julian
-     * @param name
-     * @throws java.net.MalformedURLException
+     * @param name title of the opened window
+     * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
      */
-    public void openPluginHelp(String name) throws MalformedURLException, IOException {
-        openPageAndCloseSameWindows(createURL(IMPORT_PLUGIN_HELP_PAGE), name, false, usedResource);
+    private void openPluginHelp(String name) throws IOException {
+        openPageSingleInstance(getClass().getResource(PLUGIN_HELP_PAGE).toExternalForm(), name, false, myResource);
     }
 
+    /**
+     * Saves the path of the chosen file inside a textfield and is assigend to
+     * the #exportButton.
+     *
+     * @see #getFileString(Stage stage)
+     *
+     * @param event calls method when triggered.
+     * @param test the textfield in which the path is saved
+     *
+     */
     @FXML
     private void chooseFiles(ActionEvent event, TextField test) {
         Stage stage = (Stage) ((Node) (event.getSource())).getScene().getWindow();
@@ -361,6 +367,13 @@ public class ExportsController extends FatherController implements Initializable
 
     }
 
+    /**
+     * Opens a fileChooser. Multiple data paths will concatenated to one String
+     * seperated by ;.
+     *
+     * @param stage stage which displays the filechooser
+     * @return The path of the chosen file/files
+     */
     private String getFileString(Stage stage) {
 
         FileChooser fileChooser = new FileChooser();
