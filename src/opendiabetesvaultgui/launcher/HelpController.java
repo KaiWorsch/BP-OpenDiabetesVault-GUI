@@ -207,7 +207,7 @@ public class HelpController extends FatherController implements Initializable {
                 // the directory already exists. -> do nothing
             } catch (IOException e) {
                 //something else went wrong
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
 
@@ -225,7 +225,7 @@ public class HelpController extends FatherController implements Initializable {
                 //destination file already exists
             } catch (IOException e) {
                 //something else went wrong
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }   
     }  
