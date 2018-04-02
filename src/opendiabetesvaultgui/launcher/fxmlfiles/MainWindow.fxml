@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="fatherPane" prefHeight="400.0" prefWidth="610.0" style="-fx-background-color: #EEEEEE;" stylesheets="@../../stylesheets/mainwindowStyle.css" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="opendiabetesvaultgui.launcher.MainWindowController">
+<AnchorPane id="AnchorPane" fx:id="fatherPane" prefHeight="400.0" prefWidth="610.0" style="-fx-background-color: #EEEEEE;" stylesheets="@../../stylesheets/mainwindowStyle.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="opendiabetesvaultgui.launcher.MainWindowController">
    <children>
       <MenuBar prefHeight="25.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <menus>
@@ -63,15 +63,7 @@
          </menus>
       </MenuBar>
       <AnchorPane fx:id="functionPane" layoutY="91.0" minWidth="-Infinity" prefHeight="309.0" prefWidth="610.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="91.0" />
-      <SVGPath fx:id="patientNavigation" content="M 162.20247,81.516597 146.20023,65.514581 H 34.184799 l -0.02767,15.9854 0.06095,15.985352 H 146.33239 Z" fill="007399" layoutX="-17.0" layoutY="-20.0" onMouseClicked="#clickPatientSelection" stroke="#949494" strokeWidth="0.5">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></SVGPath>
-      <SVGPath fx:id="importNavigation" content="M 162.20247,81.516597 146.20023,65.514581 H 34.184799 L 50.187071,81.516597 34.218079,97.485333 H 146.33239 Z" fill="#fbfbfb" layoutX="94.0" layoutY="-20.0" onMouseClicked="#clickImport" stroke="#949494" strokeWidth="0.5">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></SVGPath>
-      <SVGPath fx:id="sliceNavigation" content="M 162.20247,81.516597 146.20023,65.514581 H 34.184799 L 50.187071,81.516597 34.218079,97.485333 H 146.33239 Z" fill="#fbfbfb" layoutX="206.0" layoutY="-20.0" onMouseClicked="#clickSlice" stroke="#949494" strokeWidth="0.5">
+      <SVGPath fx:id="exportNavigation" content="M 162.20247,81.516597 162.1542,65.666524 34.184799,65.514581 50.187071,81.516597 34.218079,97.485333 l 128.144251,0 z" fill="#fbfbfb" layoutX="430.0" layoutY="-20.0" onMouseClicked="#clickExport" stroke="#949494" strokeWidth="0.5">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></SVGPath>
@@ -79,7 +71,15 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></SVGPath>
-      <SVGPath fx:id="exportNavigation" content="M 162.20247,81.516597 162.1542,65.666524 34.184799,65.514581 50.187071,81.516597 34.218079,97.485333 l 128.144251,0 z" fill="#fbfbfb" layoutX="430.0" layoutY="-20.0" onMouseClicked="#clickExport" stroke="#949494" strokeWidth="0.5">
+      <SVGPath fx:id="sliceNavigation" content="M 162.20247,81.516597 146.20023,65.514581 H 34.184799 L 50.187071,81.516597 34.218079,97.485333 H 146.33239 Z" fill="#fbfbfb" layoutX="206.0" layoutY="-20.0" onMouseClicked="#clickSlice" stroke="#949494" strokeWidth="0.5">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></SVGPath>
+      <SVGPath fx:id="importNavigation" content="M 162.20247,81.516597 146.20023,65.514581 H 34.184799 L 50.187071,81.516597 34.218079,97.485333 H 146.33239 Z" fill="#fbfbfb" layoutX="94.0" layoutY="-20.0" onMouseClicked="#clickImport" stroke="#949494" strokeWidth="0.5">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></SVGPath>
+      <SVGPath fx:id="patientNavigation" content="M 162.20247,81.516597 146.20023,65.514581 H 34.184799 l -0.02767,15.9854 0.06095,15.985352 H 146.33239 Z" fill="007399" layoutX="-17.0" layoutY="-20.0" onMouseClicked="#clickPatientSelection" stroke="#949494" strokeWidth="0.5">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></SVGPath>

@@ -59,8 +59,7 @@ public class Parser {
      * @return the filecontent as a String
      * @throws FileNotFoundException Exception if the file cannot be found
      */
-    private String readFile(String filePath)
-            throws FileNotFoundException, IOException {
+    private String readFile(String filePath) throws IOException {
         String returnValue = "";
         InputStream in = getClass().getResourceAsStream(filePath);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));

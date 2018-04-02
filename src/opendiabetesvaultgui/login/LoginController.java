@@ -94,8 +94,6 @@ public class LoginController extends FatherController implements Initializable {
 
                 passwordLabel.setText(myResource.getString("login.wrongPasswordText"));
                 passwordLabel.setTextFill(c);
-                //login.setStyle("-fx-focus-color: #FFFFFF;");
-                //login.setStyle("-fx-background-color: #007399");
                 passwordBox.setStroke(c);
 
                 password.clear();
@@ -109,8 +107,6 @@ public class LoginController extends FatherController implements Initializable {
 
             passwordLabel.setText(myResource.getString("login.enterPasswordText"));
             passwordLabel.setTextFill(c);
-            //login.setStyle("-fx-focus-color: #FFFFFF;");
-            //login.setStyle("-fx-background-color: #007399");
             passwordBox.setStroke(c);
 
         }

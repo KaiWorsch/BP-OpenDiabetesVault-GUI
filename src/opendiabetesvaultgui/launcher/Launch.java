@@ -41,7 +41,6 @@ public class Launch extends Application {
 
         stage.setTitle("OpenDiabetesVault - Please Log in");
         stage.setResizable(false);
-        //stage.initStyle(StageStyle.UTILITY);
         stage.setAlwaysOnTop(true);
 
         File file = new File(FileSystemView.getFileSystemView().

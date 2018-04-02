@@ -44,7 +44,6 @@ public class AboutPageControllerTest {
      */
     @Test
     public void testInitialize() {
-        System.out.println("initialize");
         URL url = null;
         ResourceBundle rb = null;
         AboutPageController instance = new AboutPageController();

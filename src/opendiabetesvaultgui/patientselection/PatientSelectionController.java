@@ -41,6 +41,7 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TableView.TableViewSelectionModel;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -157,7 +158,8 @@ public class PatientSelectionController extends FatherController
      * @param action Event: mouse click on the remove button
      * @throws IOException if failed or interrupted I/O operations.
      * @throws SQLException if sql statements invalid.
-     * @throws java.text.ParseException if an error has been reached while parsing.
+     * @throws java.text.ParseException if an error has been reached while
+     * parsing.
      */
     @FXML
     public final void removeAnEntry(final Event action)
@@ -173,10 +175,7 @@ public class PatientSelectionController extends FatherController
             dialogPane.getStylesheets().add(getClass().getResource(
                     "/opendiabetesvaultgui/stylesheets/alertStyle.css").
                     toExternalForm());
-            //dialogPane.getStyleClass().add("alertStyle");
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            //stage.getIcons().add(new Image(this.getClass().
-            //getResource(ICON).toString()));
             stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
 
             alert.showAndWait();
@@ -194,10 +193,7 @@ public class PatientSelectionController extends FatherController
             dialogPane.getStylesheets().add(getClass().getResource(
                     "/opendiabetesvaultgui/stylesheets/alertStyle.css").
                     toExternalForm());
-            //dialogPane.getStyleClass().add("alertStyle");
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            //stage.getIcons().add(new Image(this.getClass().
-            //getResource(ICON).toString()));
             stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == okButton) {
@@ -220,8 +216,7 @@ public class PatientSelectionController extends FatherController
     }
 
     /**
-     * Opens the EditWindow.fxml file without any content
-     * inside of it
+     * Opens the EditWindow.fxml file without any content inside of it
      *
      * @param action Event: mouse click on the add button
      * @throws IOException if failed or interrupted I/O operations.
@@ -244,18 +239,18 @@ public class PatientSelectionController extends FatherController
     }
 
     /**
-     * Retrieves all content of the database and stores it
-     * inside of the tableView.
+     * Retrieves all content of the database and stores it inside of the
+     * tableView.
      *
      * @throws IOException if failed or interrupted I/O operations.
-     * @throws java.text.ParseException if an error has been reached while parsing.
+     * @throws java.text.ParseException if an error has been reached while
+     * parsing.
      */
     @SuppressWarnings("empty-statement")
     public final void buildData() throws IOException, ParseException {
         //Connection c;
         data = FXCollections.observableArrayList();
         try {
-            //c = DBConnection.connect();
             String SQL = "SELECT * from PATIENT";
             ResultSet rs = c.createStatement().executeQuery(SQL);
 
@@ -318,11 +313,9 @@ public class PatientSelectionController extends FatherController
                 row.add(Hidden2);
                 System.out.println("Row added: " + row);
                 data.add(row);
-                //tableView.refresh();
             }
 
             /////////////////////
-            //  tableView.setItems(data);
         } catch (SQLException e) {
 
             System.out.println("Error on Building Data");
@@ -333,7 +326,8 @@ public class PatientSelectionController extends FatherController
      * refreshes the tableview of the patient database.
      *
      * @throws IOException if an error occurs at the buildData() function.
-     * @throws java.text.ParseException if an error has been reached while parsing.
+     * @throws java.text.ParseException if an error has been reached while
+     * parsing.
      * @see #buildData()
      */
     @FXML
@@ -347,9 +341,9 @@ public class PatientSelectionController extends FatherController
     }
 
     /**
-     * Opens the EditWindow.fxml file with all information of the 
-     * selected entry already inside of it.
-     * 
+     * Opens the EditWindow.fxml file with all information of the selected entry
+     * already inside of it.
+     *
      * @param action Event: mouse click on the edit button
      * @throws SQLException if an error has been reached while parsing.
      * @throws IOException if an error occurs at the buildData() function.
@@ -368,11 +362,8 @@ public class PatientSelectionController extends FatherController
             dialogPane.getStylesheets().add(getClass().getResource(
                     "/opendiabetesvaultgui/stylesheets/alertStyle.css").
                     toExternalForm());
-            //dialogPane.getStyleClass().add("alertStyle");
             Stage stage = (Stage) editWarning.getDialogPane().getScene().
                     getWindow();
-            //stage.getIcons().add(new Image(this.getClass().getResource(ICON).
-            //toString()));
             stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
             editWarning.showAndWait();
         } else {
@@ -395,7 +386,7 @@ public class PatientSelectionController extends FatherController
 
     /**
      * Returns the edit Boolean
-     * 
+     *
      * @return edit
      */
     public static Boolean isEdit() {
@@ -404,11 +395,25 @@ public class PatientSelectionController extends FatherController
 
     /**
      * Returns the nameList
-     * 
+     *
      * @return nameList
      */
     public static ObservableList getNameList() {
         return nameList;
+    }
+
+    /**
+     * Returns the css Styling for tooltips as a String. To add this Style to a
+     * tooltip, simply write yourToolTip.setStyle(getToolTipStyle());
+     *
+     * @return The css styling as a String
+     */
+    public static String getTooltipStyle() {
+        return "-fx-background-color: #F8F8F8;"
+                + "-fx-text-fill: black;"
+                + "-fx-font-family: 'Roboto';"
+                + "-fx-font-size: 12;"
+                + "-fx-background-radius: 0 0 0 0;";
     }
 
     /**
@@ -428,7 +433,24 @@ public class PatientSelectionController extends FatherController
         Font.loadFont(PatientSelectionController.class.getResource(
                 "/opendiabetesvaultgui/stylesheets/fonts/Roboto-Regular.ttf").
                 toExternalForm(), 50);
-
+        Tooltip removeTip = new Tooltip();
+        removeTip.setText(resource.getString("patient.deleteButtonToolTip"));
+        removeTip.setStyle(getTooltipStyle());
+        
+        Tooltip addTip = new Tooltip();
+        addTip.setText(resource.getString("patient.addButtonToolTip"));
+        addTip.setStyle(getTooltipStyle());
+        
+        Tooltip editTip = new Tooltip();
+        editTip.setText(resource.getString("patient.editButtonToolTip"));
+        editTip.setStyle(getTooltipStyle());
+        
+        Tooltip.install(removeEntry, removeTip);
+        Tooltip.install(removeEntryHitbox, removeTip);
+        Tooltip.install(addEntryButton, addTip);
+        Tooltip.install(addEntryHitbox, addTip);
+        Tooltip.install(editEntryButton, editTip);
+        Tooltip.install(editEntryHitbox, editTip);
         try {
             c = DBConnection.connect();
             Statement stmt = c.createStatement();

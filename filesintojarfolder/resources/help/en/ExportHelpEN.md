@@ -17,7 +17,7 @@
 
 <center>
  
-  ![selection](images/Export_exporter_en.png)
+  ![selection](.images/Export_exporter_en.png)
  
 </center>
 	 
@@ -25,9 +25,9 @@
 
 ## 2. Location
 
-   * Click "browse" to find and choose the location to save the exported file into. ![select](images/Import_browse.png)   
-   * The gear icon is used to configure settings for this specific plugin. ![gear](images/Import_gear.png)  
-   * The question mark icon opens a help page for this specific plugin. ![help](images/Import_plugin_help.png)  
+   * Click "browse" to find and choose the location to save the exported file into. ![select](.images/Import_browse.png)   
+   * The gear icon is used to configure settings for this specific plugin. ![gear](.images/Import_gear.png)  
+   * The question mark icon opens a help page for this specific plugin. ![help](.images/Import_plugin_help.png)  
 
 ---
   
@@ -37,7 +37,7 @@
 
 <center>
  
-  ![selection](images/Export_location_en.png) 
+  ![selection](.images/Export_location_en.png) 
  
 </center>
 
@@ -51,7 +51,7 @@
   
 <center>
  
-  ![selection](images/Export_filter_en.png) 
+  ![selection](.images/Export_filter_en.png) 
 
 </center>  
   

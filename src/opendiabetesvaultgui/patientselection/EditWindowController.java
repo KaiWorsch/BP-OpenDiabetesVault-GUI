@@ -331,11 +331,6 @@ public class EditWindowController implements Initializable {
                         monthInput.setText("0" + monthInput.getText());
                     }
                     Statement stmt = conn.createStatement();
-                    /*String query = "UPDATE PATIENT\n"
-                            + "Set surname='" + lastnameInput.getText() + "', firstname='" + firstnameInput.getText() + "', dob='" + yearInput.getText() + "-" + monthInput.getText() + "-" + dayInput.getText() + "'\n"
-                            + "WHERE surname='" + inputList.get(0) + "'\n"
-                            + "AND firstname='" + inputList.get(1) + "'\n"
-                            + "AND dob='" + oldYear + "-" + oldMonth + "-" + oldDay + "';";*/
                     String query = "UPDATE PATIENT\n"
                             + "SET surname='" 
                             + lastnameInput.getText() + "', firstname='"    //the input from the surname textfield
@@ -344,19 +339,12 @@ public class EditWindowController implements Initializable {
                             + monthInput.getText() + "-"                    //the input from the monthInput textfield
                             + dayInput.getText() + "'\n"                    //the input from the dayInput textfield
                             + "WHERE id='" + inputList.get(0) + "';";       //the id from the selected entry
-                    //System.out.print(query);
                     ResultSet rs = stmt.executeQuery(query);
                     ((Node) (event.getSource())).getScene().getWindow().hide();
                 } catch (SQLException e) {
                     System.out.println("Error on adding Entry");
                 }
             } else {
-                /*Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("OpenDiabetesVault");
-            alert.setContentText("Please enter valid Info first");
-            
-            alert.showAndWait();*/
-
                 if (firstnameInput.getText().isEmpty()) {
                     //Set Color scheme to red for missing Input
                     firstnameLabel.setTextFill(wrongColor);
@@ -441,7 +429,6 @@ public class EditWindowController implements Initializable {
                             + yearInput.getText() + "-"             //the input from the yearInput textfield
                             + monthInput.getText() + "-"            //the input from the monthInput textfield
                             + dayInput.getText() + "');";           //the input from the dayInput textfield
-                    //System.out.print(query);
 
                     ResultSet rs = stmt.executeQuery(query);
 
@@ -451,17 +438,6 @@ public class EditWindowController implements Initializable {
                     System.out.println("Error on adding Entry");
                 }
             } else {
-                /*
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("OpenDiabetesVault");
-            alert.setContentText("Please enter valid Info first");
-            
-            //Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            //stage.getIcons().add(new Image("/shapes/logo_nude.png"));
-            
-            alert.showAndWait();
-                 */
-
                 if (firstnameInput.getText().isEmpty()) {
                     //Set Color scheme to red for missing Input
                     firstnameLabel.setTextFill(wrongColor);

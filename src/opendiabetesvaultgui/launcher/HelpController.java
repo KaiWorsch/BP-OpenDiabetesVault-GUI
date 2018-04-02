@@ -9,9 +9,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -23,6 +28,7 @@ import javafx.scene.web.WebView;
 import javax.swing.filechooser.FileSystemView;
 import opendiabetesvaultgui.markdownparser.Parser;
 import opendiabetesvaultgui.process.ProcessController;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
  * FXML Controller class manages the help pages.
@@ -55,12 +61,12 @@ public class HelpController extends FatherController implements Initializable {
             String path;
             path = getPagePath(MainWindowController.getPage(),
                     MainWindowController.getLanguage());
-            loadPage(path);           
-          
-        } catch (IOException ex) {
+            loadPage(path);
+
+        } catch (IOException | URISyntaxException ex) {
             Logger.getLogger(HelpController.class.getName())
                     .log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(HelpController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -72,15 +78,15 @@ public class HelpController extends FatherController implements Initializable {
      * @param path the path to the .md file
      * @throws IOException if read from file goes wrong
      * @throws FileNotFoundException if file was not found
+     * @throws java.net.URISyntaxException if URI syntax is wrong
      */
-    private void loadPage( String path) throws IOException, URISyntaxException {
+    private void loadPage(String path) throws IOException, URISyntaxException, Exception {
         try {
+            copyFiles();
             String htmlCode;
             // parses markdowncode to htmlcode
             System.out.println(path);
             Parser parser = new Parser();
-            //path = "/opendiabetesvaultgui/launcher/help/de/PatientSelectionHelpDE.md";
-            //path = "/resources/help/de/PatientSelectionHelpDE.md";
             htmlCode = parser.mdParse(path);
             writeToFile(htmlCode);
             // for loading html into the webview-browser
@@ -88,7 +94,7 @@ public class HelpController extends FatherController implements Initializable {
             String pathToHtmlFile = FileSystemView.getFileSystemView().
                     getDefaultDirectory().getPath() + File.separator
                     + "ODV/.pageHelpTMP.html";
- 
+
             File tmp = new File(pathToHtmlFile);
             // passes the local file into a url
             URL url = tmp.toURI().toURL();
@@ -117,7 +123,7 @@ public class HelpController extends FatherController implements Initializable {
         final int three = MainWindowController.getPROCESS_ID();
         final int four = MainWindowController.getEXPORT_ID();
 
-        String path; 
+        String path;
         String lang;
         if ("English".equals(PREFS_FOR_ALL.get(LANGUAGE_NAME, ""))) {
             path = "/resources/help/en/";
@@ -126,23 +132,18 @@ public class HelpController extends FatherController implements Initializable {
             path = "/resources/help/" + language + "/";
             lang = language.toUpperCase(Locale.ENGLISH) + ".md";
         }
-        if (pageID == zero ){
+        if (pageID == zero) {
             return path + "PatientSelectionHelp" + lang;
-        }
-        else if (pageID == one){
+        } else if (pageID == one) {
             return path + "ImportHelp" + lang;
-        } 
-        else if (pageID == two){
+        } else if (pageID == two) {
             return path + "SliceHelp" + lang;
-        }
-        else if (pageID == three){
+        } else if (pageID == three) {
             return path + "ProcessHelp" + lang;
-        }
-        else if (pageID == four){
+        } else if (pageID == four) {
             return path + "ExportHelp" + lang;
-        }
-        else {
-                return path + "Default" + lang;
+        } else {
+            return path + "Default" + lang;
         }
     }
 
@@ -160,10 +161,8 @@ public class HelpController extends FatherController implements Initializable {
             String path = FileSystemView.getFileSystemView().
                     getDefaultDirectory().getPath() + File.separator
                     + "ODV/.pageHelpTMP.html";
-            System.out.println(path);
             fileStream = new FileOutputStream(
-            new File(path));
-            //new File("resources/help/helpTMP.html"));
+                    new File(path));
             writer = new OutputStreamWriter(fileStream, "UTF-8");
             writer.write(text);
             writer.flush();
@@ -191,4 +190,43 @@ public class HelpController extends FatherController implements Initializable {
     public final WebView getWebview() {
         return webview;
     }
+
+   /**
+    * Copys all images stored at the /resources/help/images to Users/ODV/.images/.
+    * @throws IOException if the source directory doesn't exist
+    */
+    private void copyFiles() throws IOException {
+        Path directoryPath = Paths.get(FileSystemView.getFileSystemView().
+                getDefaultDirectory().getPath() + File.separator
+                + "ODV/.images/");
+
+        if (!Files.exists(directoryPath)) {
+            try {
+                Path newDir = Files.createDirectory(directoryPath);
+            } catch (FileAlreadyExistsException e) {
+                // the directory already exists. -> do nothing
+            } catch (IOException e) {
+                //something else went wrong
+                e.printStackTrace();
+            }
+        }
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+        // Ant-style path matching
+        org.springframework.core.io.Resource[] resources = resolver.getResources("/resources/help/images/**");
+
+        for (org.springframework.core.io.Resource resource : resources) {
+            InputStream is = resource.getInputStream();
+            String fp = directoryPath + File.separator + resource.getFilename();
+            try {
+                Files.copy(is, Paths.get(fp));
+            } catch (FileAlreadyExistsException e) {
+                //destination file already exists
+            } catch (IOException e) {
+                //something else went wrong
+                e.printStackTrace();
+            }
+        }   
+    }  
 }

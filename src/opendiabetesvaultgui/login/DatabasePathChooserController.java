@@ -22,6 +22,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -87,6 +89,23 @@ public class DatabasePathChooserController extends FatherController
      */
     @FXML
     private void listenToText(final ActionEvent event) {
+    }
+    
+    /**
+     * This method fires the acceptButton and is assigned to the TextField.
+     *
+     *
+     * @param e KeyEvent which calls this function
+     *
+     */
+    @FXML
+    private void databaseAcceptKey(KeyEvent e) {
+
+        if (e.getCode() == KeyCode.ENTER) {
+            acceptButton.fire();
+
+        }
+
     }
 
     /**

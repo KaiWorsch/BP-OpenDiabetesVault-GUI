@@ -17,7 +17,7 @@
 
 <center>
  
-  ![selection](images/Import_help_1.png)
+  ![selection](.images/Import_help_1.png)
  
 </center>
 	 
@@ -25,9 +25,9 @@
 
 ## 2. File selection
 
-   * Click "browse" to find and choose any file to import. ![select](images/Import_browse.png)   
-   * The gear icon is used to configure settings for this specific plugin. ![gear](images/Import_gear.png)  
-   * The question mark icon opens a help page for this specific plugin. ![help](images/Import_plugin_help.png)  
+   * Click "browse" to find and choose any file to import. ![select](.images/Import_browse.png)   
+   * The gear icon is used to configure settings for this specific plugin. ![gear](.images/Import_gear.png)  
+   * The question mark icon opens a help page for this specific plugin. ![help](.images/Import_plugin_help.png)  
 
 ---
   
@@ -37,7 +37,7 @@
 
 <center>
  
-  ![interpreter](images/Import_interpreter_en.png)
+  ![interpreter](.images/Import_interpreter_en.png)
  
 </center>
 
@@ -51,7 +51,7 @@
   
 <center>
  
-  ![filter](images/Import_filter_en.png)
+  ![filter](.images/Import_filter_en.png)
  
 </center>  
   

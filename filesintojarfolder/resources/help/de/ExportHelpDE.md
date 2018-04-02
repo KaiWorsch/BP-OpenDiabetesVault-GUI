@@ -17,7 +17,7 @@
 	 
 <center>
  
-  ![selection](images/Export_exporter_de.png)
+  ![selection](.images/Export_exporter_de.png)
  
 </center>
 
@@ -25,9 +25,9 @@
 
 ## 2. Speicherort
 
-   * Klicken Sie auf "Auswählen" um den Speicherort zu setzen. ![select](images/Import_auswaehlen.png)   
-   * Über das Zahnradsymbol lässt sich das Plugin konfigurieren. ![gear](images/Import_gear.png) 
-   * Über das Fragezeichensymbol lässt sich eine Hilfeseite zum Plugin öffnen. ![help](images/Import_plugin_help.png) 
+   * Klicken Sie auf "Auswählen" um den Speicherort zu setzen. ![select](.images/Import_auswaehlen.png)   
+   * Über das Zahnradsymbol lässt sich das Plugin konfigurieren. ![gear](.images/Import_gear.png) 
+   * Über das Fragezeichensymbol lässt sich eine Hilfeseite zum Plugin öffnen. ![help](.images/Import_plugin_help.png) 
 
 ---
   
@@ -37,7 +37,7 @@
    
 <center>
  
-  ![selection](images/Export_location_de.png) 
+  ![selection](.images/Export_location_de.png) 
  
 </center>
      
@@ -51,7 +51,7 @@
  
 <center>
  
-  ![selection](images/Export_filter_de.png) 
+  ![selection](.images/Export_filter_de.png) 
  
 </center>
      

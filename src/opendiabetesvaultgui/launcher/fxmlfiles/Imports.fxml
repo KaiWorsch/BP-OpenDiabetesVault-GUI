@@ -42,7 +42,7 @@
       </CheckBox>
       <Accordion fx:id="accord" prefHeight="671.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="380.0" AnchorPane.topAnchor="0.0">
         <panes>
-          <TitledPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="612.0" prefWidth="408.0" text="Importer">
+          <TitledPane fx:id="importTitledPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="612.0" prefWidth="408.0" text="Importer">
                <content>
                   <ScrollPane fx:id="two" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="498.0" prefWidth="406.0">
                      <content>

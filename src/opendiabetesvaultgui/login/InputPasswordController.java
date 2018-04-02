@@ -109,8 +109,6 @@ public class InputPasswordController extends FatherController implements Initial
                 secondPasswordLabel.setText(myResource.getString("inputpw.entriesDontMatchText"));
 
                 secondPasswordLabel.setTextFill(wrongColor);
-                //login.setStyle("-fx-focus-color: #FFFFFF;");
-                //login.setStyle("-fx-background-color: #007399");
                 secondPasswordBox.setStroke(wrongColor);
                 passwordCheck.clear();
             }
@@ -121,8 +119,6 @@ public class InputPasswordController extends FatherController implements Initial
 
                 passwordLabel.setText(myResource.getString("inputpw.enterPasswordFirstText"));
                 passwordLabel.setTextFill(wrongColor);
-                //login.setStyle("-fx-focus-color: #FFFFFF;");
-                //login.setStyle("-fx-background-color: #007399");
                 passwordBox.setStroke(wrongColor);
             } else {
                 passwordRectangle.setFill(standartColor);
@@ -130,18 +126,13 @@ public class InputPasswordController extends FatherController implements Initial
 
                 passwordLabel.setText(myResource.getString("inputpw.enterPasswordText"));
                 passwordLabel.setTextFill(standartColor);
-                //login.setStyle("-fx-focus-color: #FFFFFF;");
-                //login.setStyle("-fx-background-color: #007399");
                 passwordBox.setStroke(backgroundColor);
             }
             if (passwordCheck.getText().isEmpty()) {
                 secondPasswordRectangle.setFill(wrongColor);
                 secondPasswordRectangle.setStroke(wrongColor);
 
-                // secondPasswordLabel.setText(myResource.getString("inputpw.enterPasswordAgainText"));
                 secondPasswordLabel.setTextFill(wrongColor);
-                //login.setStyle("-fx-focus-color: #FFFFFF;");
-                //login.setStyle("-fx-background-color: #007399");
                 secondPasswordBox.setStroke(wrongColor);
             }
         }
@@ -190,6 +181,7 @@ public class InputPasswordController extends FatherController implements Initial
                 selectLanguage.setValue(startLanguage);
                 PREFS_FOR_ALL.put(LANGUAGE_NAME, startLanguage);
                 PREFS_FOR_ALL.put(LANGUAGE_DISPLAY, javaDefault);
+                PREFS_FOR_ALL.put("dateFormat", "yyyy-MM-dd");
 
                 // if the system language isnt supported yet
                 // set the language to english

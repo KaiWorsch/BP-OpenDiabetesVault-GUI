@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javax.swing.filechooser.FileSystemView;
 import opendiabetesvaultgui.markdownparser.Parser;
 import opendiabetesvaultgui.process.ProcessController;
 
@@ -35,8 +36,6 @@ public class PluginHelpController implements Initializable {
     @FXML
     private WebView pluginHelpWebview;
 
-
-
     /**
      * Initializes the controller class.
      *
@@ -50,8 +49,9 @@ public class PluginHelpController implements Initializable {
 
     /**
      * loads the help given by a plugin.
-     *
+     * 
      * @param path the path to the .md file
+     * @throws java.net.URISyntaxException if URI syntax is wrong
      */
     public final void loadHelpPage(final String path) throws URISyntaxException {
         try {
@@ -62,8 +62,9 @@ public class PluginHelpController implements Initializable {
             writeToFile(htmlCode);
             // for loading html into the webview-browser
             WebEngine webEngine = pluginHelpWebview.getEngine();
-            String pathToHtmlFile;
-            pathToHtmlFile = "src/opendiabetesvaultgui/importer/tmp.html";
+            String pathToHtmlFile = FileSystemView.getFileSystemView().
+                    getDefaultDirectory().getPath() + File.separator
+                    + "ODV/.pluginHelpTMP.html";
             File tmp = new File(pathToHtmlFile);
             // passes the local file into a url
             URL url = tmp.toURI().toURL();
@@ -79,7 +80,7 @@ public class PluginHelpController implements Initializable {
         }
     }
 
-        /**
+    /**
      * writes a string of htmlcode into the help_tmp.html file.
      *
      * @param text a string of html code
@@ -89,26 +90,29 @@ public class PluginHelpController implements Initializable {
 
         FileOutputStream fileStream = null;
         OutputStreamWriter writer;
-      try {
-        fileStream = new FileOutputStream(
-        new File("src/opendiabetesvaultgui/importer/tmp.html"));
-        writer = new OutputStreamWriter(fileStream, "UTF-8");
-        writer.write(text);
-        writer.flush();
-        writer.close();
-        fileStream.flush();
-        fileStream.close();
-      } catch (IOException e) {
-          System.out.println(e.getMessage());
-      } finally {
-          try {
-              if ((fileStream != null)) {
-                  fileStream.close();
-              }
-          } catch (IOException e) {
-              System.out.println(e.getMessage());
-          }
-      }
+        try {
+            String path = FileSystemView.getFileSystemView().
+                    getDefaultDirectory().getPath() + File.separator
+                    + "ODV/.pluginHelpTMP.html";
+            fileStream = new FileOutputStream(
+                    new File(path));
+            writer = new OutputStreamWriter(fileStream, "UTF-8");
+            writer.write(text);
+            writer.flush();
+            writer.close();
+            fileStream.flush();
+            fileStream.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if ((fileStream != null)) {
+                    fileStream.close();
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
 }

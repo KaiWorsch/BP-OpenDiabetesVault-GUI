@@ -22,8 +22,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import static opendiabetesvaultgui.launcher.FatherController.ICON;
@@ -100,6 +105,18 @@ public class OptionsWindowController extends FatherController implements Initial
 
     private ComboBox selectDateFormat;
 
+    @FXML
+
+    private Rectangle databasePathBox;
+
+    @FXML
+
+    private Rectangle databasePathRectangle;
+
+    @FXML
+
+    private Button databasePathChooserButton;
+
     /**
      * Saves if the language was changed.
      */
@@ -116,6 +133,18 @@ public class OptionsWindowController extends FatherController implements Initial
      * Saves if the date format was changed.
      */
     private Boolean newDateFormat = false;
+    @FXML
+    private AnchorPane fatherPane;
+    @FXML
+    private TabPane tabs;
+    @FXML
+    private Tab languagesAndDateFormat;
+    @FXML
+    private Label languageLabel;
+    @FXML
+    private Label dateFormatLabel;
+    @FXML
+    private Label pathLabel;
 
     /**
      * Initializes the controller class.
@@ -300,5 +329,22 @@ public class OptionsWindowController extends FatherController implements Initial
 
         });
 
+    }
+
+    @FXML
+    private void toggleDatabasePath(ActionEvent event) {
+        if ((PREFS_FOR_ALL.getBoolean("databaseInMemory", false) == true) || isInMemoryCheckBox.isSelected()) {
+            databasePathChooserButton.setDisable(true);
+            pathLabel.setDisable(true);
+            databasePathBox.setDisable(true);
+            databasePathRectangle.setDisable(true);
+            dataBasePath.setDisable(true);
+        } else {
+            databasePathChooserButton.setDisable(false);
+            pathLabel.setDisable(false);
+            databasePathBox.setDisable(false);
+            databasePathRectangle.setDisable(false);
+            dataBasePath.setDisable(false);
+        }
     }
 }

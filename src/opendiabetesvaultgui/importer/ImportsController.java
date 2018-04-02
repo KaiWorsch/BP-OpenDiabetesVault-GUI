@@ -8,23 +8,20 @@ package opendiabetesvaultgui.importer;
 import de.opendiabetes.vault.container.VaultEntry;
 import de.opendiabetes.vault.plugin.common.OpenDiabetesPlugin.StatusListener;
 import de.opendiabetes.vault.plugin.fileimporter.FileImporter;
-import de.opendiabetes.vault.plugin.importer.Importer;
 import de.opendiabetes.vault.plugin.interpreter.Interpreter;
 import de.opendiabetes.vault.plugin.management.OpenDiabetesPluginManager;
 import de.opendiabetes.vault.plugin.util.HelpLanguage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -52,7 +49,6 @@ import javafx.stage.Stage;
 import javax.swing.filechooser.FileSystemView;
 import opendiabetesvaultgui.launcher.FatherController;
 import opendiabetesvaultgui.patientselection.PatientSelectionController;
-import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXMLLoader;
@@ -62,10 +58,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
+import static opendiabetesvaultgui.launcher.FatherController.PLUGIN_CONTROL_PAGE;
+import static opendiabetesvaultgui.launcher.FatherController.PLUGIN_HELP_PAGE;
 import opendiabetesvaultgui.launcher.MainWindowController;
 
 /**
@@ -93,6 +91,8 @@ public class ImportsController extends FatherController
     private Button importAllButton;
     @FXML
     private Accordion accord;
+    @FXML
+    private TitledPane importTitledPane;
 
     private OpenDiabetesPluginManager pluginManager;
 
@@ -103,6 +103,11 @@ public class ImportsController extends FatherController
     private String controls;
     private final Boolean pluginCheck[] = new Boolean[4];
     private final int pluginCount = 3;
+
+    private List<String> importPlugins;
+    private List<String> interpreterPlugins;
+
+    private final String defaultHelpPagePath = "/resources/default.md";
     //private  PluginHelpController pluginHelpController;
 
     /**
@@ -114,17 +119,11 @@ public class ImportsController extends FatherController
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        /*
-        DATABASE
-         */
-        Connection c;
-//        controls = (String) inputList.get(4);
-        /*if (controls == null) {
-            for (int i = 0; i < pluginCount; i++) {
-                pluginCheck[i] = false;
-            }
-        }*/
-        System.out.println(controls);
+        accord.setExpandedPane(importTitledPane);
+        importTitledPane.setExpanded(true);
+        Font.loadFont(MainWindowController.class.getResource(
+                "/opendiabetesvaultgui/stylesheets/fonts/Roboto-Regular.ttf").
+                toExternalForm(), 10);
 
         myResource = resources;
         // default value for the datepicker
@@ -135,22 +134,25 @@ public class ImportsController extends FatherController
         pluginManager = OpenDiabetesPluginManager.getInstance();
 
         // the interpreter and import plugin lists
-        List<String> importPlugins = pluginManager.
+        importPlugins = pluginManager.
                 getPluginIDsOfType(FileImporter.class);
-        List<String> interpreterPlugins = pluginManager.
+        interpreterPlugins = pluginManager.
                 getPluginIDsOfType(Interpreter.class);
 
         for (int i = 0; i < importPlugins.size(); i++) {
-            Importer plugin = pluginManager.
-                    getPluginFromString(Importer.class, importPlugins.
+            FileImporter plugin = pluginManager.
+                    getPluginFromString(FileImporter.class, importPlugins.
                             get(i));
 
             try {
                 importDisplay.getChildren().add(createImportPlugin(importPlugins.
-                        get(i), (FileImporter) plugin));
+                        get(i), plugin));
             } catch (Exception ex) {
-                Logger.getLogger(ImportsController.class.getName()).log(Level.SEVERE, null, ex);
+                showAlert(myResource.getString("import.somethingWentWrongAlertHeader"),
+                        myResource.getString("import.importerCoulndtBeLoadedAlertContent"));
+
             }
+
         }
 
         importDisplay.setTranslateX(0);
@@ -166,6 +168,21 @@ public class ImportsController extends FatherController
                 importAllButton.setDisable(true);
             }
         });
+
+    }
+
+    /**
+     * Returns the css Styling for tooltips as a String. To add this Style to a
+     * tooltip, simply write yourToolTip.setStyle(getToolTipStyle());
+     *
+     * @return The css styling as a String
+     */
+    public static String getTooltipStyle() {
+        return "-fx-background-color: #F8F8F8;"
+                + "-fx-text-fill: black;"
+                + "-fx-font-family: 'Roboto';"
+                + "-fx-font-size: 12;"
+                + "-fx-background-radius: 0 0 0 0;";
     }
 
     /**
@@ -197,33 +214,38 @@ public class ImportsController extends FatherController
         AnchorPane content = new AnchorPane();
         ProgressBar progress = new ProgressBar();
 
-        StatusListener st = (int i, String string) -> {
-            progress.setProgress(i / 100);
-        };
-        plugin.registerStatusCallback(st);
+        String tmp;
 
-        Path helpPath = pluginManager.getHelpFilePath(plugin, HelpLanguage.LANG_EN);
+        try {
+            tmp = pluginManager.getHelpFilePath(plugin, HelpLanguage.LANG_EN).toString();
+        } catch (Exception ex) {
+            tmp = defaultHelpPagePath;
+        }
+
+        final String helpPath = tmp;
 
         String file = "export/" + pluginManager.pluginToString(plugin) + "-0.0.1/"
                 + pluginManager.pluginToString(plugin) + ".properties";
 
-        List<VaultEntry> importedData = new ArrayList<>();
-        List<VaultEntry> interpretedData = new ArrayList<>();
-
+        List<List<VaultEntry>> importedData = new ArrayList<>();
+        List<List<VaultEntry>> interpretedData = new ArrayList<>();
+        Properties pro = new Properties();
+        pro.load(new FileInputStream(file));
+        plugin.loadConfiguration(pro);
         List<String> compatiblePlugins = plugin.getListOfCompatiblePluginIDs();
 
         List<Node> list = new ArrayList();
         final int i;
         Button interpreterButton = new Button(myResource.getString("import.interpreterButton"));
 
-        if (true) {
+        if (!compatiblePlugins.isEmpty()) {
             pluginManager.pluginsFromStringList(compatiblePlugins);
-            //     pluginManager.getPluginFromString(, file) 
             if (containsInstance(pluginManager.pluginsFromStringList(compatiblePlugins), Interpreter.class)) {
                 FilteredList<String> filtered;
                 filtered = new FilteredList<>(FXCollections.observableList(compatiblePlugins), (String p)
                         -> pluginManager.getPluginFromString(Interpreter.class, p) != null);
                 ComboBox selectInterpreter = new ComboBox(FXCollections.observableArrayList(filtered));
+                selectInterpreter.getSelectionModel().selectFirst();
 
                 Rectangle comboBoxBox = new Rectangle();
                 comboBoxBox.setWidth(230);
@@ -246,94 +268,105 @@ public class ImportsController extends FatherController
                 interpreterButton.relocate(620, 100);
                 interpreterButton.setPrefWidth(120);
 
-                ////////////////////////////////
-                SVGPath gearInterpreter = new SVGPath();
-                gearInterpreter.setContent("M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2."
-                        + "11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-."
-                        + "22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2."
-                        + "18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61."
-                        + "25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3."
-                        + "46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s."
-                        + "03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22."
-                        + "39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24."
-                        + "42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1."
-                        + "69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-."
-                        + "12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3."
-                        + "5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z");
-                gearInterpreter.setStyle("-fx-fill: #007399");
                 Circle hitBoxGearInterpreter = new Circle(10);
                 hitBoxGearInterpreter.setOpacity(0);
                 hitBoxGearInterpreter.setCursor(Cursor.HAND);
+                hitBoxGearInterpreter.relocate(680, 10);
 
-                SVGPath helpSignInterpreter = new SVGPath();
-                helpSignInterpreter.setContent("M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4."
-                        + "48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3."
-                        + "59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1."
-                        + "79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2."
-                        + "5 3-5 0-2.21-1.79-4-4-4z");
-                /*helpSign.setRotationAxis(Rotate.X_AXIS);
-        helpSign.setRotate(180);*/
-                helpSignInterpreter.setStyle("-fx-fill: #007399;");
+                Tooltip hitBoxGearInterpreterTip = new Tooltip();
+                hitBoxGearInterpreterTip.setText(myResource.getString("import.interpreterControlToolTip"));
+                hitBoxGearInterpreterTip.setStyle(getTooltipStyle());
+                Tooltip.install(hitBoxGearInterpreter, hitBoxGearInterpreterTip);
+
+                SVGPath gearInterpreter = createGear();
 
                 Circle hitBoxHelpSignInterpreter = new Circle(10);
                 hitBoxHelpSignInterpreter.setCursor(Cursor.HAND);
                 hitBoxHelpSignInterpreter.setOpacity(0);
-
-                hitBoxGearInterpreter.relocate(680, 10);
                 hitBoxHelpSignInterpreter.relocate(720, 10);
 
-                helpSignInterpreter.relocate(hitBoxHelpSignInterpreter.getLayoutX() - 11, hitBoxHelpSignInterpreter.
-                        getLayoutY() - 11);
-                gearInterpreter.relocate(hitBoxGearInterpreter.getLayoutX() - 11, hitBoxGearInterpreter.
-                        getLayoutY() - 11);
+                Tooltip hitBoxHelpSignInterpreterTip = new Tooltip();
+                hitBoxHelpSignInterpreterTip.setText(myResource.getString("import.interpreterHelpToolTip"));
+                hitBoxHelpSignInterpreterTip.setStyle(getTooltipStyle());
+                Tooltip.install(hitBoxHelpSignInterpreter, hitBoxHelpSignInterpreterTip);
+
+                SVGPath helpSignInterpreter = createHelpSing();
+
+                helpSignInterpreter.relocate(hitBoxHelpSignInterpreter.getLayoutX() - 10, hitBoxHelpSignInterpreter.
+                        getLayoutY() - 10);
+                gearInterpreter.relocate(hitBoxGearInterpreter.getLayoutX() - 10, hitBoxGearInterpreter.
+                        getLayoutY() - 10);
+
+                hitBoxHelpSignInterpreter.setOnMouseClicked((MouseEvent event) -> {
+                    Interpreter interpreterPlugin = pluginManager.getPluginFromString(Interpreter.class, selectInterpreter.getSelectionModel().getSelectedItem().toString());
+                    String helpPagePath;
+                    try {
+                        helpPagePath = pluginManager.getHelpFilePath(interpreterPlugin, HelpLanguage.LANG_EN).toString();
+                    } catch (Exception ex) {
+                        helpPagePath = defaultHelpPagePath;
+                    }
+                    try {
+                        openPluginHelp(helpPagePath, pluginManager.pluginToString(interpreterPlugin) + " " + myResource.
+                                getString("import.pluginHelpTitle"));
+                    } catch (IOException | URISyntaxException ex) {
+
+                        showAlert(myResource.getString("import.somethingWentWrongAlertHeader"),
+                                myResource.getString("import.helpPageCoulndtBeLoadedAlertContent"));
+                    }
+
+                });
 
                 ////////////////////////////////////////
-                // neue position impotieren  interpreterButton.relocate(380, 80);
-                list.addAll(Arrays.asList(comboBoxBox, comboBoxRectangle, interpreterButton, selectInterpreter, gearInterpreter, hitBoxGearInterpreter, helpSignInterpreter, hitBoxHelpSignInterpreter, interpreterLabel));
+                // neue position impotieren
+                list.addAll(Arrays.asList(comboBoxBox, comboBoxRectangle, interpreterButton, selectInterpreter,
+                        interpreterLabel, helpSignInterpreter, hitBoxHelpSignInterpreter,
+                        gearInterpreter, hitBoxGearInterpreter));
 
                 interpreterButton.setOnAction((ActionEvent action) -> {
                     Interpreter interpreter
                             = pluginManager.getPluginFromString(Interpreter.class,
-                                    // oder einfach alle interpreter anbieten?!?!?!?
                                     (String) selectInterpreter.getSelectionModel().getSelectedItem());
-                    interpretedData.clear();
-                    interpretedData.addAll(interpreter.interpret(importedData));
+
+                    for (int h = 0; h < importedData.size(); h++) {
+
+                        interpretedData.add(interpreter.interpret(importedData.get(h)));
+                    }
                 });
             }
         }
 
         pluginManager.getCompatiblePluginIDs(plugin);
-        Properties test = new Properties();
-        //  test.
 
         Button importButton = new Button(myResource.
                 getString("import.importButton"));
         importButton.setPrefWidth(100);
-        SVGPath gear = new SVGPath();
-        gear.setContent("M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2."
-                + "11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-."
-                + "22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2."
-                + "18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61."
-                + "25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3."
-                + "46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s."
-                + "03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22."
-                + "39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24."
-                + "42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1."
-                + "69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-."
-                + "12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3."
-                + "5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z");
-        gear.setStyle("-fx-fill: #007399");
+        importButton.relocate(390, 100);
+
+        importAllButton.pressedProperty().addListener((ObservableValue<? extends Boolean> observable,
+                Boolean oldValue, Boolean newValue) -> {
+            if (newValue) {
+                importButton.fire();
+            }
+        });
+
+        importButton.setDisable(true);
+        SVGPath gear = createGear();
         Circle hitBoxGear = new Circle(10);
         hitBoxGear.setOpacity(0);
         hitBoxGear.setCursor(Cursor.HAND);
+
+        Tooltip importGearTip = new Tooltip();
+        importGearTip.setText(myResource.getString("import.pluginControlToolTip"));
+        importGearTip.setStyle(getTooltipStyle());
+        Tooltip.install(gear, importGearTip);
 
         hitBoxGear.setOnMouseClicked(event -> {
             try {
                 openPluginControll(name + " " + myResource.
                         getString("import.pluginControlTitle"));
             } catch (IOException ex) {
-                Logger.getLogger(ImportsController.class.getName()).
-                        log(Level.SEVERE, null, ex);
+                showAlert(myResource.getString(myResource.getString("import.somethingWentWrongAlertContent")),
+                        myResource.getString("import.controlPageCouldntBeOpenedAlertContent"));
             }
         });
 
@@ -342,41 +375,43 @@ public class ImportsController extends FatherController
         hitBoxHelpSign.setOpacity(0);
         hitBoxHelpSign.setOnMouseClicked((MouseEvent event) -> {
             try {
-                openPluginHelp(helpPath.toString(), name + " " + myResource.
+                openPluginHelp(helpPath, name + " " + myResource.
                         getString("import.pluginHelpTitle"));
-            } catch (IOException ex) {
-                Logger.getLogger(ImportsController.class.getName())
-                        .log(Level.SEVERE, null, ex);
-            } catch (URISyntaxException ex) {
-                Logger.getLogger(ImportsController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException | URISyntaxException ex) {
+                showAlert(myResource.getString("import.somethingWentWrongAlertHeader"),
+                        myResource.getString("import.helpPageCoulndtBeLoadedAlertContent"));
             }
         });
-        SVGPath helpSign = new SVGPath();
-        helpSign.setContent("M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4."
-                + "48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3."
-                + "59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1."
-                + "79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2."
-                + "5 3-5 0-2.21-1.79-4-4-4z");
-        /*helpSign.setRotationAxis(Rotate.X_AXIS);
-        helpSign.setRotate(180);*/
-        helpSign.setStyle("-fx-fill: #007399;");
-        importButton.relocate(390, 100);
 
-        // position auswählbutton importButton.relocate(18, 100);
-        // interpter positon     hitBoxGear.relocate(540, 11);
-        // interpreter position  hitBoxHelpSign.relocate(580, 10);
-        hitBoxGear.relocate(420, 11);
+        Tooltip hitBoxHelpSignTip = new Tooltip();
+        hitBoxHelpSignTip.setText(myResource.getString("import.pluginHelpToolTip"));
+        hitBoxHelpSignTip.setStyle(getTooltipStyle());
+        Tooltip.install(hitBoxHelpSign, hitBoxHelpSignTip);
+
+        SVGPath helpSign = createHelpSing();
+        hitBoxGear.relocate(420, 10);
         hitBoxHelpSign.relocate(460, 10);
-        helpSign.relocate(hitBoxHelpSign.getLayoutX() - 11, hitBoxHelpSign.
-                getLayoutY() - 11);
-        gear.relocate(hitBoxGear.getLayoutX() - 11, hitBoxGear.
-                getLayoutY() - 11);
+        helpSign.relocate(hitBoxHelpSign.getLayoutX() - 10, hitBoxHelpSign.
+                getLayoutY() - 10);
+        gear.relocate(hitBoxGear.getLayoutX() - 10, hitBoxGear.
+                getLayoutY() - 10);
+
+        Tooltip helpSignTip = new Tooltip();
+        helpSignTip.setText(myResource.getString("import.pluginHelpToolTip"));
+        helpSignTip.setStyle(getTooltipStyle());
+        Tooltip.install(helpSign, helpSignTip);
+
+        Tooltip hitBoxGearTip = new Tooltip();
+        hitBoxGearTip.setText(myResource.getString("import.pluginControlToolTip"));
+        hitBoxGearTip.setStyle(getTooltipStyle());
+        Tooltip.install(hitBoxGear, hitBoxGearTip);
+
         Button browseButton = new Button(myResource.
                 getString("import.browseButton"));
         TextField field = new TextField();
 
         browseButton.setOnAction((ActionEvent action) -> {
-            chooseFiles(action, field);
+            chooseFiles(action, field, importButton);
         });
 
         browseButton.relocate(18, 100);
@@ -405,24 +440,12 @@ public class ImportsController extends FatherController
 
         list.add(fieldBox);
         list.addAll(Arrays.asList(fieldLabel, fieldRectangle, field, browseButton,
-                helpSign, gear, hitBoxGear, hitBoxHelpSign, importButton));
+                importButton, gear, hitBoxGear, helpSign, hitBoxHelpSign));
 
-        ScrollPane teste = new ScrollPane();
         /////////////////////////
-
-        teste.setFitToHeight(true);
         TitledPane pane = new TitledPane("", content);
-        AnchorPane.setBottomAnchor(teste, 0.0);
-        AnchorPane.setLeftAnchor(teste, 0.0);
-        AnchorPane.setRightAnchor(teste, 0.0);
-        AnchorPane.setTopAnchor(teste, 0.0);
 
         content.getChildren().addAll(list);
-
-        teste.setContent(content);
-        teste.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        teste.setVbarPolicy(ScrollBarPolicy.NEVER);
-        teste.fitToHeightProperty();
 
         pane.setGraphic(createBorderPane(name, pane, progress, importButton));
 
@@ -430,25 +453,45 @@ public class ImportsController extends FatherController
 
         importButton.setOnAction(e -> {
             try {
-                importedData.addAll(plugin.importData(field.getText()));
+                String[] dataArray = field.getText().split(";");
+
+                StatusListener st = (int j, String string) -> {
+
+                    progress.setProgress(j / 100);
+
+                };
+                plugin.registerStatusCallback(st);
+
+                for (int k = 0; k < dataArray.length; k++) {
+
+                    importedData.add(plugin.importData(dataArray[k]));
+
+                }
                 MainWindowController.setImported(true);
                 interpreterButton.setDisable(false);
 
             } catch (Exception ex) {
+                showAlert(myResource.getString("import.somethingWentWrongAlertHeader"),
+                        myResource.getString("import.importWentWrongAlertContent")
+                        + "\n (" + pluginManager.pluginToString(plugin) + ")");
 
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("OpenDiabetesVault");
-                alert.setHeaderText(myResource.getString("import.importWentWrongAlertHeader"));
-                alert.setContentText(myResource.getString("import.importWentWrongAlertContent"));
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(getClass().getResource(
-                        "/opendiabetesvaultgui/stylesheets/alertStyle.css").
-                        toExternalForm());
-                alert.showAndWait();
             }
 
         });
         return pane;
+    }
+
+    private void showAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("OpenDiabetesVault");
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource(
+                "/opendiabetesvaultgui/stylesheets/alertStyle.css").
+                toExternalForm());
+        alert.showAndWait();
+
     }
 
     /**
@@ -468,8 +511,11 @@ public class ImportsController extends FatherController
     public BorderPane createBorderPane(String name, TitledPane pane, ProgressBar progress, Button button) {
         BorderPane bPane = new BorderPane();
         CheckBox cBox = new CheckBox("");
-        if (prefs.getBoolean(name, false)) {
-            pane.setCollapsible(true);
+        Tooltip cBoxTip = new Tooltip();
+        cBoxTip.setText(myResource.getString("import.pluginCheckboxToolTip"));
+        cBoxTip.setStyle(getTooltipStyle());
+        cBox.setTooltip(cBoxTip);
+        if (prefs.getBoolean(name + inputList.get(0), false)) {
             pane.setCollapsible(false);
             pane.setExpanded(false);
         } else {
@@ -513,12 +559,44 @@ public class ImportsController extends FatherController
         box.selectedProperty().addListener((ObservableValue<? extends Boolean> observable,
                 Boolean oldValue, Boolean newValue)
                 -> {
-
-            target.setExpanded(false);
+            if (!newValue) {
+                target.setExpanded(newValue);
+                button.setDisable(!newValue);
+            }
             target.setCollapsible(newValue);
-            button.setDisable(!newValue);
-            //  prefs.putBoolean(name, !newValue);
+            prefs.putBoolean(name + inputList.get(0), !newValue);
         });
+    }
+
+    private SVGPath createGear() {
+        SVGPath gear = new SVGPath();
+        gear.setContent("M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2."
+                + "11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-."
+                + "22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2."
+                + "18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61."
+                + "25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3."
+                + "46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s."
+                + "03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22."
+                + "39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24."
+                + "42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1."
+                + "69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-."
+                + "12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3."
+                + "5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z");
+        gear.setStyle("-fx-fill: #007399");
+        return gear;
+    }
+
+    private SVGPath createHelpSing() {
+        SVGPath helpSign = new SVGPath();
+        helpSign.setContent("M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4."
+                + "48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3."
+                + "59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1."
+                + "79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2."
+                + "5 3-5 0-2.21-1.79-4-4-4z");
+        /*helpSign.setRotationAxis(Rotate.X_AXIS);
+        helpSign.setRotate(180);*/
+        helpSign.setStyle("-fx-fill: #007399;");
+        return helpSign;
     }
 
     /**
@@ -540,6 +618,7 @@ public class ImportsController extends FatherController
      * @param path the path to the help page
      * @param title the title of the help page
      * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
+     * @throws java.net.URISyntaxException if path couldnt be parsed as URI
      *
      */
     public void openPluginHelp(String path, String title) throws IOException, URISyntaxException {
@@ -565,12 +644,14 @@ public class ImportsController extends FatherController
      *
      * @param event calls method when triggered.
      * @param pathField the textfield in which the path is saved.
+     * @param importButton the import button
      */
     @FXML
-    private void chooseFiles(final ActionEvent event, final TextField pathField) {
+    private void chooseFiles(final ActionEvent event, final TextField pathField, Button importButton) {
         Stage stage = (Stage) ((Node) (event.getSource())).getScene().
                 getWindow();
         pathField.setText(getFileString(stage));
+        importButton.setDisable(false);
     }
 
     /**

@@ -18,7 +18,7 @@
 
 <center>
  
-  ![searchbar](images/searchbar_en.png)
+  ![searchbar](.images/searchbar_en.png)
  
 </center>
 
@@ -26,13 +26,13 @@
 
 ## 2. Adding a Patient
 
-  * Click ![add](images/add.png)  
+  * Click ![add](.images/add.png)  
   * Enter first name, last name and date of birth.
   * Click "Add".
 
 <center>
 
-  ![add_form_en](images/add_form_en.png)
+  ![add_form_en](.images/add_form_en.png)
 
 </center>
 
@@ -41,13 +41,13 @@
 ## 3. Editing a Patient
 
   * Select a patient entry.
-  * Click ![edit](images/edit.png)
+  * Click ![edit](.images/edit.png)
   * Change the first name, last name or the date of birth.  
   * Click "Edit".
 
 <center>
  
-  ![edit_form_en](images/edit_form_en.png)
+  ![edit_form_en](.images/edit_form_en.png)
  
 </center>
 
@@ -56,12 +56,12 @@
 ## 4. Deleting a Patient
 
   * Select a patient.
-  * Click ![delete](images/delete.png)
+  * Click ![delete](.images/delete.png)
   * Click "OK".
 
 <center>
 
-  ![delete_en](images/delete_en.png)
+  ![delete_en](.images/delete_en.png)
 
 </center>
 

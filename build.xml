@@ -50,4 +50,47 @@
     nbproject/build-impl.xml and nbproject/jfx-impl.xml.
 
     -->
+    <target name="-post-jfx-jar">
+  <jar jarfile="dist/OpenDiabetesVault.jar">
+    <zipfileset src="${dist.jar}" excludes="META-INF/*" />
+    <zipfileset src="lib/ormlite-core-5.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/ormlite-jdbc-5.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/hsqldb.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.confluence.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.confluence.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.context.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.core.ant_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.core.osgi_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.help.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.html.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.markdown.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.markdown.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.mediawiki.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.mediawiki.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.tasks.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.textile.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.textile.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.tracwiki.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.tracwiki.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.twiki.core_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.twiki.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.eclipse.mylyn.wikitext.ui_2.1.0.201707272240.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/org.jsoup_1.10.2.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\gson-2.8.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\javacsv.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\log4j-api-2.10.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\log4j-core-2.10.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\log4j-slf4j-impl-2.10.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\pf4j-2.0.0.jar" excludes="META-INF/*" />
+    <zipfileset src="lib\slf4j-api-1.7.5.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/opendiabetes-base.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/spring-core-5.0.4.RELEASE.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/commons-io-2.6.jar" excludes="META-INF/*" />
+    <zipfileset src="lib/commons-logging-1.2.jar" excludes="META-INF/*" />
+    <manifest>
+        <attribute name="Main-Class" value="opendiabetesvaultgui.launcher.Launch"/>
+    </manifest>
+  </jar>
+</target>
 </project>

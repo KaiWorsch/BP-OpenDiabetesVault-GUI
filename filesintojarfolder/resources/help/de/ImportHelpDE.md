@@ -17,7 +17,7 @@
 	 
 <center>
  
-  ![selection](images/Import_hilfe_1.png)
+  ![selection](.images/Import_hilfe_1.png)
  
 </center>
 
@@ -25,9 +25,9 @@
 
 ## 2. Dateiauswahl
 
-   * Klicken Sie auf "Auswählen" um die zu importierende Datei zu finden und auszuwählen. ![select](images/Import_auswaehlen.png)   
-   * Über das Zahnradsymbol lässt sich das Plugin konfigurieren. ![gear](images/Import_gear.png) 
-   * Über das Fragezeichensymbol lässt sich eine Hilfeseite zum Plugin öffnen. ![help](images/Import_plugin_help.png) 
+   * Klicken Sie auf "Auswählen" um die zu importierende Datei zu finden und auszuwählen. ![select](.images/Import_auswaehlen.png)   
+   * Über das Zahnradsymbol lässt sich das Plugin konfigurieren. ![gear](.images/Import_gear.png) 
+   * Über das Fragezeichensymbol lässt sich eine Hilfeseite zum Plugin öffnen. ![help](.images/Import_plugin_help.png) 
 
 ---
   
@@ -37,7 +37,7 @@
    
 <center>
  
-  ![interpreter](images/Import_interpreter_de.png)
+  ![interpreter](.images/Import_interpreter_de.png)
  
 </center>
      
@@ -51,7 +51,7 @@
  
 <center>
  
-  ![filter](images/Import_filter_de.png)
+  ![filter](.images/Import_filter_de.png)
  
 </center>
      

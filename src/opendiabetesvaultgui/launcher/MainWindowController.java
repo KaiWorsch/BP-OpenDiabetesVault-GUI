@@ -28,6 +28,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -189,7 +190,7 @@ public class MainWindowController extends FatherController
      */
     private Map<Integer, NavigationBarElement> navigationbarElements;
 
-/**
+    /**
      * constant to store patient selection id
      */
     private static final int PATIENT_SELECTION_ID = 0;
@@ -280,7 +281,6 @@ public class MainWindowController extends FatherController
                 dialogPane.getStylesheets().add(getClass().getResource(
                         "/opendiabetesvaultgui/stylesheets/alertStyle.css").
                         toExternalForm());
-                //dialogPane.getStyleClass().add("alertStyle");
                 Stage stage = (Stage) alert.getDialogPane().getScene().
                         getWindow();
                 /**
@@ -411,10 +411,7 @@ public class MainWindowController extends FatherController
                 getClass().getResource(
                         "/opendiabetesvaultgui/stylesheets/alertStyle.css").
                         toExternalForm());
-        //dialogPane.getStyleClass().add("alertStyle");
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        //stage.getIcons().add(new Image(this.getClass()
-        //.getResource(ICON).toString()));
         stage.getIcons().add(new Image(getClass().getResource(ICON).toExternalForm()));
 
         Optional<ButtonType> result = alert.showAndWait();
@@ -548,6 +545,20 @@ public class MainWindowController extends FatherController
                 setHeight((SCREEN_BOUNDS.getHeight()) * defaultWindowSize);
     }
 
+    /**
+     * Returns the css Styling for tooltips as a String. To add this Style to a
+     * tooltip, simply write yourToolTip.setStyle(getToolTipStyle());
+     *
+     * @return The css styling as a String
+     */
+    public static String getTooltipStyle() {
+        return "-fx-background-color: #F8F8F8;"
+                + "-fx-text-fill: black;"
+                + "-fx-font-family: 'Roboto';"
+                + "-fx-font-size: 12;"
+                + "-fx-background-radius: 0 0 0 0;";
+    }
+
     @Override
     // Call at the beginning PatientSelection
     public final void initialize(final URL location,
@@ -591,6 +602,32 @@ public class MainWindowController extends FatherController
         } catch (IOException ex) {
             Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        Tooltip patientSelectionTip = new Tooltip();
+        patientSelectionTip.setText(usedResource.getString("main.patientSelectionToolTip"));
+        patientSelectionTip.setStyle(getTooltipStyle());
+        
+        Tooltip importSelectionTip = new Tooltip();
+        importSelectionTip.setText(usedResource.getString("main.importToolTip"));
+        importSelectionTip.setStyle(getTooltipStyle());
+        
+        Tooltip sliceSelectionTip = new Tooltip();
+        sliceSelectionTip.setText(usedResource.getString("main.sliceToolTip"));
+        sliceSelectionTip.setStyle(getTooltipStyle());
+        
+        Tooltip processSelectionTip = new Tooltip();
+        processSelectionTip.setText(usedResource.getString("main.processToolTip"));
+        processSelectionTip.setStyle(getTooltipStyle());
+        
+        Tooltip exportSelectionTip = new Tooltip();
+        exportSelectionTip.setText(usedResource.getString("main.exportToolTip"));
+        exportSelectionTip.setStyle(getTooltipStyle());
+        
+        Tooltip.install(patientNavigation, patientSelectionTip);
+        Tooltip.install(importNavigation, importSelectionTip);
+        Tooltip.install(sliceNavigation, sliceSelectionTip);
+        Tooltip.install(processNavigation, processSelectionTip);
+        Tooltip.install(exportNavigation, exportSelectionTip);
 
     }
 
@@ -606,11 +643,9 @@ public class MainWindowController extends FatherController
         String hex;
         switch (color) {
             case "seen":
-                //hex = "#3d6fff";
                 hex = "#007399";
                 break;
             case "current":
-                //hex = "#43ff3d";
                 hex = "#0096c9";
                 break;
             case "unseen":
@@ -636,12 +671,9 @@ public class MainWindowController extends FatherController
         String hex;
         switch (color) {
             case "current":
-                //hex = "#3d6fff";
-                //hex = "#0096c9";
                 hex = "#FFFFFF";
                 break;
             case "seen":
-                //hex = "#43ff3d";
                 hex = "#FFFFFF";
                 break;
             case "unseen":
@@ -702,46 +734,6 @@ public class MainWindowController extends FatherController
                     + checksPaddingX, element.getLabelElement().getLayoutY()
                     + checksPaddingY);
         }
-        /* importNavigation.setScaleX(scale);
-        importNavigation.relocate(patientNavigation.getLayoutX()
-        + requiredWidth, navigationBarHeight);
-        
-        sliceNavigation.setScaleX(scale);
-        sliceNavigation.relocate(importNavigation.getLayoutX()
-        + requiredWidth, navigationBarHeight);
-        
-        processNavigation.setScaleX(scale);
-        processNavigation.relocate(sliceNavigation.getLayoutX()
-        + requiredWidth, navigationBarHeight);
-        
-        exportNavigation.setScaleX(scale);
-        exportNavigation.relocate(processNavigation.getLayoutX()
-        + requiredWidth, navigationBarHeight);*/
-
-        //********* relocate the labels from the navigationbar ********//
-        /* exportLabel.setLayoutX(exportNavigation.getLayoutX() + svgPathPaddingX);
-        processLabel.
-        setLayoutX(processNavigation.getLayoutX() + svgPathPaddingX);
-        importLabel.setLayoutX(importNavigation.getLayoutX() + svgPathPaddingX);
-        // doesnt need padding is long enough
-        patientLabel.setLayoutX(patientNavigation.getLayoutX());
-        sliceLabel.setLayoutX(sliceNavigation.getLayoutX() + svgPathPaddingX);*/
-        // relocate checks from navigationbar
-        /*patientCheck.relocate(patientLabel.getLayoutX()
-        + patientLabel.getWidth()
-        + checksPaddingX, patientLabel.getLayoutY()
-        + checksPaddingY);
-        importCheck.relocate(importLabel.getLayoutX()
-        + importLabel.getWidth()
-        + checksPaddingX, importLabel.getLayoutY()
-        + checksPaddingY);
-        processCheck.relocate(processLabel.getLayoutX()
-        + processLabel.getWidth()
-        + checksPaddingX, processLabel.getLayoutY()
-        + checksPaddingY);
-        sliceCheck.relocate(sliceLabel.getLayoutX()
-        + sliceLabel.getWidth()
-        + checksPaddingX, sliceLabel.getLayoutY() + checksPaddingY);*/
         seperatorBar.setWidth(windowWidth);
     }
 
