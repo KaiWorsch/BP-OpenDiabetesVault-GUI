@@ -18,7 +18,7 @@
 
 <center>
  
-  ![searchbar](../help/images/searchbar_de.png)
+  ![searchbar](images/searchbar_de.png)
  
 </center>
 
@@ -26,13 +26,13 @@
 
 ## 2. Patient hinzufügen
 
-  * Klicke auf ![add](../help/images/add.png)  
+  * Klicke auf ![add](images/add.png)  
   * Gebe Vorname, Nachname und Geburtstag ein.
   * Klicke auf "Hinzufügen".
 
 <center>
 
-  ![add_form_en](../help/images/add_form_de.png)
+  ![add_form_en](images/add_form_de.png)
 
 </center>
 
@@ -41,13 +41,13 @@
 ## 3. Patient bearbeiten
 
   * Wähle einen Patient aus.
-  * Klicke auf ![edit](../help/images/edit.png)
+  * Klicke auf ![edit](images/edit.png)
   * Ändere den Vornamen, Nachnamen oder das Geburtsdatum.  
   * Klicke auf "Übernehmen".
 
 <center>
  
-  ![edit_form_en](../help/images/edit_form_de.png)
+  ![edit_form_en](images/edit_form_de.png)
  
 </center>
 
@@ -56,12 +56,12 @@
 ## 4. Patient löschen
 
   * Wähle einen Patient aus.
-  * Klicke auf ![delete](../help/images/delete.png)
+  * Klicke auf ![delete](images/delete.png)
   * Klicke auf "OK".
 
 <center>
 
-  ![delete_en](../help/images/delete_de.png)
+  ![delete_en](images/delete_de.png)
 
 </center>
 

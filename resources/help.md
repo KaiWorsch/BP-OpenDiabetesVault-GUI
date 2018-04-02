@@ -1,1 +1,0 @@
-This plugin currently does not provide a helpfile.

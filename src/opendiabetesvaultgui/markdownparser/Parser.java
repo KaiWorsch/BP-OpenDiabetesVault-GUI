@@ -5,19 +5,17 @@
  */
 package opendiabetesvaultgui.markdownparser;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static java.util.stream.Collectors.joining;
-import java.util.stream.Stream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
 import org.eclipse.mylyn.wikitext.markdown.core.MarkdownLanguage;
 
 /**
  * help class to handle md to html parsing.
+ *
  * @author Daniel Schäfer, Martin Steil, Julian Schwind, Kai Worsch
  */
 public class Parser {
@@ -30,8 +28,8 @@ public class Parser {
      * @return html code as a String
      * @throws FileNotFoundException Exception if the file cannot be found
      */
-    public static String mdParse(final String filePath)
-            throws FileNotFoundException {
+    public String mdParse(final String filePath)
+            throws FileNotFoundException, IOException {
         String fileContent = readFile(filePath);
         fileContent = parseString(fileContent);
         return fileContent;
@@ -43,7 +41,7 @@ public class Parser {
      * @param markupContent the md code
      * @return the html code as a String
      */
-    private static String parseString(final String markupContent) {
+    private String parseString(final String markupContent) {
         MarkupParser markupParser = new MarkupParser();
         markupParser.setMarkupLanguage(new MarkdownLanguage());
         String htmlContent = markupParser.parseToHtml(markupContent);
@@ -61,17 +59,17 @@ public class Parser {
      * @return the filecontent as a String
      * @throws FileNotFoundException Exception if the file cannot be found
      */
-    private static String readFile(String filePath)
-            throws FileNotFoundException {
-        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
-            String returnValue = stream.
-                    collect(joining(System.lineSeparator()));
-            return returnValue;
-        } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).
-                    log(Level.SEVERE, null, ex);
+    private String readFile(String filePath)
+            throws FileNotFoundException, IOException {
+        String returnValue = "";
+        InputStream in = getClass().getResourceAsStream(filePath);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line = "";
+        while ((line = reader.readLine()) != null) {
+            returnValue += line + "\n";
         }
-        return "Error reading file";
+        reader.close();
+        return returnValue;
     }
 
 }

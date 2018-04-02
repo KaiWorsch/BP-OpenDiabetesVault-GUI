@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -52,11 +53,12 @@ public class PluginHelpController implements Initializable {
      *
      * @param path the path to the .md file
      */
-    public final void loadHelpPage(final String path) {
+    public final void loadHelpPage(final String path) throws URISyntaxException {
         try {
             String htmlCode;
             // parses markdowncode to htmlcode
-            htmlCode = Parser.mdParse(path);
+            Parser parser = new Parser();
+            htmlCode = parser.mdParse(path);
             writeToFile(htmlCode);
             // for loading html into the webview-browser
             WebEngine webEngine = pluginHelpWebview.getEngine();

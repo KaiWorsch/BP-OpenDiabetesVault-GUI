@@ -8,60 +8,60 @@
 
 ---
 
-## 1. Select a Patient
+## 1. Selecting a Patient
 
-  * Click on the row of the table to select a patient.  
-    Afterwards the patient's name appears in the application title.
+  * By clicking on one of the rows from the table, the selected patient's name
+     should appear in the application title.
   * Alternativly use a doubleklick to select a patient  
     and switch directly to the import area.  
-  * Use the searchbar to search lexicographical for patients.
+  * Use the searchbar to look up specific patient entries.
 
 <center>
  
-  ![searchbar](../help/images/searchbar_en.png)
+  ![searchbar](images/searchbar_en.png)
  
 </center>
 
 ---
 
-## 2. Add a Patient
+## 2. Adding a Patient
 
-  * Click ![add](../help/images/add.png)  
+  * Click ![add](images/add.png)  
   * Enter first name, last name and date of birth.
   * Click "Add".
 
 <center>
 
-  ![add_form_en](../help/images/add_form_en.png)
+  ![add_form_en](images/add_form_en.png)
 
 </center>
 
 ---
 
-## 3. Edit a Patient
+## 3. Editing a Patient
 
-  * Select a patient.
-  * Click ![edit](../help/images/edit.png)
+  * Select a patient entry.
+  * Click ![edit](images/edit.png)
   * Change the first name, last name or the date of birth.  
   * Click "Edit".
 
 <center>
  
-  ![edit_form_en](../help/images/edit_form_en.png)
+  ![edit_form_en](images/edit_form_en.png)
  
 </center>
 
 ---
 
-## 4. Delete a Patient
+## 4. Deleting a Patient
 
   * Select a patient.
-  * Click ![delete](../help/images/delete.png)
+  * Click ![delete](images/delete.png)
   * Click "OK".
 
 <center>
 
-  ![delete_en](../help/images/delete_en.png)
+  ![delete_en](images/delete_en.png)
 
 </center>
 

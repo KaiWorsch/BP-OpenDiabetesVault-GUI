@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javax.swing.filechooser.FileSystemView;
 import opendiabetesvaultgui.markdownparser.Parser;
 import opendiabetesvaultgui.process.ProcessController;
 
@@ -59,6 +60,8 @@ public class HelpController extends FatherController implements Initializable {
         } catch (IOException ex) {
             Logger.getLogger(HelpController.class.getName())
                     .log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(HelpController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -70,16 +73,22 @@ public class HelpController extends FatherController implements Initializable {
      * @throws IOException if read from file goes wrong
      * @throws FileNotFoundException if file was not found
      */
-    private void loadPage(final String path) throws IOException {
+    private void loadPage( String path) throws IOException, URISyntaxException {
         try {
             String htmlCode;
             // parses markdowncode to htmlcode
-            htmlCode = Parser.mdParse(path);
+            System.out.println(path);
+            Parser parser = new Parser();
+            //path = "/opendiabetesvaultgui/launcher/help/de/PatientSelectionHelpDE.md";
+            //path = "/resources/help/de/PatientSelectionHelpDE.md";
+            htmlCode = parser.mdParse(path);
             writeToFile(htmlCode);
             // for loading html into the webview-browser
             final WebEngine webEngine = webview.getEngine();
-            String pathToHtmlFile;
-            pathToHtmlFile = "resources/help/helpTMP.html";
+            String pathToHtmlFile = FileSystemView.getFileSystemView().
+                    getDefaultDirectory().getPath() + File.separator
+                    + "ODV/.pageHelpTMP.html";
+ 
             File tmp = new File(pathToHtmlFile);
             // passes the local file into a url
             URL url = tmp.toURI().toURL();
@@ -111,10 +120,10 @@ public class HelpController extends FatherController implements Initializable {
         String path; 
         String lang;
         if ("English".equals(PREFS_FOR_ALL.get(LANGUAGE_NAME, ""))) {
-            path = "resources/help/en/";
+            path = "/resources/help/en/";
             lang = "EN.md";
         } else {
-            path = "resources/help/" + language + "/";
+            path = "/resources/help/" + language + "/";
             lang = language.toUpperCase(Locale.ENGLISH) + ".md";
         }
         if (pageID == zero ){
@@ -148,8 +157,13 @@ public class HelpController extends FatherController implements Initializable {
         FileOutputStream fileStream = null;
         OutputStreamWriter writer;
         try {
+            String path = FileSystemView.getFileSystemView().
+                    getDefaultDirectory().getPath() + File.separator
+                    + "ODV/.pageHelpTMP.html";
+            System.out.println(path);
             fileStream = new FileOutputStream(
-            new File("resources/help/helpTMP.html"));
+            new File(path));
+            //new File("resources/help/helpTMP.html"));
             writer = new OutputStreamWriter(fileStream, "UTF-8");
             writer.write(text);
             writer.flush();

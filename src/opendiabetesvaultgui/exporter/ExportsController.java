@@ -10,6 +10,7 @@ import de.opendiabetes.vault.plugin.management.OpenDiabetesPluginManager;
 import de.opendiabetes.vault.plugin.util.HelpLanguage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -161,6 +162,8 @@ public class ExportsController extends FatherController implements Initializable
                 openPluginHelp(helpPath.toString(), name + "  " + myResource.getString("import.pluginHelpTitle"));
             } catch (IOException ex) {
                 Logger.getLogger(ImportsController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(ExportsController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         SVGPath helpSign = new SVGPath();
@@ -297,7 +300,7 @@ public class ExportsController extends FatherController implements Initializable
      *
      * @throws java.io.IOException if fxml file or ResourceBundle wasnt found.
      */
-    private void openPluginHelp(String path, String title) throws IOException {
+    private void openPluginHelp(String path, String title) throws IOException, URISyntaxException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(PLUGIN_HELP_PAGE), myResource);
         Parent root = loader.load();
